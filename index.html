@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Powered Marketing Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 40px 0;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .card h2 {
+            color: #5a67d8;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #5a67d8;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #5a67d8, #667eea);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(90, 103, 216, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #5a67d8;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f7fafc;
+            border-radius: 10px;
+            border-left: 5px solid #5a67d8;
+            display: none;
+        }
+
+        .result h3 {
+            color: #5a67d8;
+            margin-bottom: 15px;
+        }
+
+        .result-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .result-section h4 {
+            color: #4a5568;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            border-left-color: #e53e3e;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            opacity: 0.8;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 AI Marketing Portfolio</h1>
+            <p class="subtitle">Transform your marketing projects into compelling case studies and proposals</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Case Study Generator -->
+            <div class="card">
+                <h2>📊 Case Study Generator</h2>
+                <form id="caseStudyForm">
+                    <div class="form-group">
+                        <label for="projectTitle">Project Title</label>
+                        <input type="text" id="projectTitle" required placeholder="e.g., Social Media Campaign for Tech Startup">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="client">Client/Company</label>
+                        <input type="text" id="client" required placeholder="e.g., TechFlow Inc.">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="industry">Industry</label>
+                        <select id="industry" required>
+                            <option value="">Select Industry</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Finance">Finance</option>
+                            <option value="E-commerce">E-commerce</option>
+                            <option value="Education">Education</option>
+                            <option value="Real Estate">Real Estate</option>
+                            <option value="Food & Beverage">Food & Beverage</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="objectives">Project Objectives</label>
+                        <textarea id="objectives" required placeholder="e.g., Increase brand awareness, generate leads, improve engagement..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tactics">Key Tactics Used</label>
+                        <textarea id="tactics" required placeholder="e.g., Content marketing, paid ads, influencer partnerships..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="results">Results Achieved</label>
+                        <textarea id="results" required placeholder="e.g., 150% increase in followers, 45% boost in conversions..."></textarea>
+                    </div>
+
+                    <button type="submit">Generate Case Study</button>
+                </form>
+
+                <div class="loading" id="caseStudyLoading">
+                    <div class="spinner"></div>
+                    <p>Creating your case study...</p>
+                </div>
+
+                <div class="result" id="caseStudyResult">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+
+            <!-- Proposal Generator -->
+            <div class="card">
+                <h2>💼 Proposal Generator</h2>
+                <form id="proposalForm">
+                    <div class="form-group">
+                        <label for="companyName">Company Name</label>
+                        <input type="text" id="companyName" required placeholder="e.g., ABC Corporation">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="businessType">Business Type</label>
+                        <select id="businessType" required>
+                            <option value="">Select Business Type</option>
+                            <option value="Startup">Startup</option>
+                            <option value="Small Business">Small Business</option>
+                            <option value="Medium Enterprise">Medium Enterprise</option>
+                            <option value="Large Corporation">Large Corporation</option>
+                            <option value="Non-profit">Non-profit</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="marketingGoals">Primary Marketing Goals</label>
+                        <textarea id="marketingGoals" required placeholder="e.g., Increase website traffic, improve brand recognition, generate qualified leads..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="currentChallenges">Current Marketing Challenges</label>
+                        <textarea id="currentChallenges" required placeholder="e.g., Low conversion rates, limited social media presence, unclear messaging..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="budget">Budget Range</label>
+                        <select id="budget" required>
+                            <option value="">Select Budget Range</option>
+                            <option value="Under $5,000">Under $5,000</option>
+                            <option value="$5,000 - $15,000">$5,000 - $15,000</option>
+                            <option value="$15,000 - $50,000">$15,000 - $50,000</option>
+                            <option value="$50,000 - $100,000">$50,000 - $100,000</option>
+                            <option value="Over $100,000">Over $100,000</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="timeline">Project Timeline</label>
+                        <select id="timeline" required>
+                            <option value="">Select Timeline</option>
+                            <option value="1-3 months">1-3 months</option>
+                            <option value="3-6 months">3-6 months</option>
+                            <option value="6-12 months">6-12 months</option>
+                            <option value="Ongoing">Ongoing</option>
+                        </select>
+                    </div>
+
+                    <button type="submit">Generate Proposal Outline</button>
+                </form>
+
+                <div class="loading" id="proposalLoading">
+                    <div class="spinner"></div>
+                    <p>Creating your proposal outline...</p>
+                </div>
+
+                <div class="result" id="proposalResult">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>Built with ❤️ using OpenAI API • Deployed on Netlify</p>
+        </footer>
+    </div>
+
+    <script>
+        // Case Study Form Handler
+        document.getElementById('caseStudyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                projectTitle: document.getElementById('projectTitle').value,
+                client: document.getElementById('client').value,
+                industry: document.getElementById('industry').value,
+                objectives: document.getElementById('objectives').value,
+                tactics: document.getElementById('tactics').value,
+                results: document.getElementById('results').value
+            };
+
+            await generateContent('case-study', formData, 'caseStudyLoading', 'caseStudyResult', renderCaseStudy);
+        });
+
+        // Proposal Form Handler
+        document.getElementById('proposalForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                companyName: document.getElementById('companyName').value,
+                businessType: document.getElementById('businessType').value,
+                marketingGoals: document.getElementById('marketingGoals').value,
+                currentChallenges: document.getElementById('currentChallenges').value,
+                budget: document.getElementById('budget').value,
+                timeline: document.getElementById('timeline').value
+            };
+
+            await generateContent('proposal', formData, 'proposalLoading', 'proposalResult', renderProposal);
+        });
+
+        // Generic content generation function
+        async function generateContent(type, data, loadingId, resultId, renderFunction) {
+            const loading = document.getElementById(loadingId);
+            const result = document.getElementById(resultId);
+            const submitBtn = document.querySelector(`#${type === 'case-study' ? 'caseStudyForm' : 'proposalForm'} button`);
+
+            // Show loading state
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/.netlify/functions/generate-content', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ type, data })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const responseData = await response.json();
+                renderFunction(responseData, result);
+
+            } catch (error) {
+                console.error('Error:', error);
+                result.innerHTML = `
+                    <div class="error">
+                        <h3>⚠️ Error</h3>
+                        <p>Failed to generate content. Please check your API key configuration and try again.</p>
+                        <p><small>Error: ${error.message}</small></p>
+                    </div>
+                `;
+            } finally {
+                loading.style.display = 'none';
+                result.style.display = 'block';
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Render case study results
+        function renderCaseStudy(data, container) {
+            const caseStudy = data.case_study;
+            container.innerHTML = `
+                <h3>📋 Generated Case Study</h3>
+                <div class="result-section">
+                    <h4>Introduction</h4>
+                    <p>${caseStudy.introduction}</p>
+                </div>
+                <div class="result-section">
+                    <h4>Challenge</h4>
+                    <p>${caseStudy.challenge}</p>
+                </div>
+                <div class="result-section">
+                    <h4>Solution</h4>
+                    <p>${caseStudy.solution}</p>
+                </div>
+                <div class="result-section">
+                    <h4>Results</h4>
+                    <p>${caseStudy.results}</p>
+                </div>
+            `;
+        }
+
+        // Render proposal results
+        function renderProposal(data, container) {
+            const proposal = data.proposal_outline;
+            container.innerHTML = `
+                <h3>🎯 Generated Proposal Outline</h3>
+                <div class="result-section">
+                    <h4>Executive Summary</h4>
+                    <p>${proposal.executive_summary}</p>
+                </div>
+                <div class="result-section">
+                    <h4>Recommended Strategy</h4>
+                    <p>${proposal.strategy}</p>
+                </div>
+                <div class="result-section">
+                    <h4>Key Deliverables</h4>
+                    <p>${proposal.deliverables}</p>
+                </div>
+                <div class="result-section">
+                    <h4>Timeline & Investment</h4>
+                    <p>${proposal.timeline_investment}</p>
+                </div>
+                <div class="result-section">
+                    <h4>Next Steps</h4>
+                    <p>${proposal.next_steps}</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
