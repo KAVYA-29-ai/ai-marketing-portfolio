@@ -1,6 +1,6 @@
 const fetch = require("node-fetch");
 
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
   // Handle CORS preflight
   if (event.httpMethod === "OPTIONS") {
     return {
@@ -14,7 +14,6 @@ exports.handler = async (event, context) => {
     };
   }
 
-  // Only POST allowed
   if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
@@ -29,7 +28,7 @@ exports.handler = async (event, context) => {
   try {
     const { type, data } = JSON.parse(event.body);
 
-    const apiKey = process.env.GOOGLE_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY; // ✅ keep consistent
     if (!apiKey) {
       return {
         statusCode: 500,
@@ -37,7 +36,7 @@ exports.handler = async (event, context) => {
           "Access-Control-Allow-Origin": "*",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ error: "Google API key not configured" }),
+        body: JSON.stringify({ error: "Gemini API key not configured" }),
       };
     }
 
@@ -60,18 +59,14 @@ Sections needed:
 4. Results (2–3 sentences)
 
 Respond ONLY in JSON with this structure:
-${JSON.stringify(
-  {
-    case_study: {
-      introduction: "",
-      challenge: "",
-      solution: "",
-      results: "",
-    },
-  },
-  null,
-  2
-)}`;
+{
+  "case_study": {
+    "introduction": "",
+    "challenge": "",
+    "solution": "",
+    "results": ""
+  }
+}`;
 
       responseStructure = {
         case_study: {
@@ -99,19 +94,15 @@ Sections needed:
 5. Next Steps
 
 Respond ONLY in JSON with this structure:
-${JSON.stringify(
-  {
-    proposal_outline: {
-      executive_summary: "",
-      strategy: "",
-      deliverables: "",
-      timeline_investment: "",
-      next_steps: "",
-    },
-  },
-  null,
-  2
-)}`;
+{
+  "proposal_outline": {
+    "executive_summary": "",
+    "strategy": "",
+    "deliverables": "",
+    "timeline_investment": "",
+    "next_steps": ""
+  }
+}`;
 
       responseStructure = {
         proposal_outline: {
@@ -136,11 +127,7 @@ ${JSON.stringify(
           "X-goog-api-key": apiKey,
         },
         body: JSON.stringify({
-          contents: [
-            {
-              parts: [{ text: prompt }],
-            },
-          ],
+          contents: [{ parts: [{ text: prompt }] }],
         }),
       }
     );
@@ -158,10 +145,12 @@ ${JSON.stringify(
       const aiContent =
         aiResult.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
       const jsonMatch = aiContent.match(/\{[\s\S]*\}/);
-      generatedContent = jsonMatch ? JSON.parse(jsonMatch[0]) : responseStructure;
+      generatedContent = jsonMatch
+        ? JSON.parse(jsonMatch[0])
+        : responseStructure;
     } catch (err) {
       console.error("JSON parse error:", err);
-      generatedContent = responseStructure; // fallback default
+      generatedContent = responseStructure;
     }
 
     return {

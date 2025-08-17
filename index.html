@@ -1,733 +1,756 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
+  <!--
+    AI Marketing Portfolio — Full UI (Dark/Light + Copy + Cinematic Results + Aesthetic Background)
+    Author: You (+ ChatGPT)
+    Notes:
+    - Connects to /.netlify/functions/generate-content (Gemini 2.0 Flash backend)
+    - No third-party heavy libs (only Font Awesome CDN)
+    - Highly commented and structured for readability/maintainability
+  -->
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI Marketing Portfolio - Professional</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+  <title>AI Marketing Portfolio — Case Studies & Proposals</title>
+  <meta name="theme-color" content="#111827" />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 
   <style>
-    /* ==== RESET ==== */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* ============ CSS RESET / BASE ============ */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; line-height: 1.5; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+    img, picture, video, canvas, svg { display: block; max-width: 100%; }
+    input, button, textarea, select { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+    ul, ol { margin: 0; padding: 0; list-style: none; }
 
-    /* ==== GALAXY BACKGROUND (AESTHETIC) ==== */
+    /* ============ THEME VARIABLES ============ */
+    :root {
+      /* colors */
+      --bg-0: #0b1020;        /* deep space */
+      --bg-1: #111827;        /* card backdrop dark */
+      --text: #e5e7eb;        /* primary text */
+      --muted: #a3a7b7;       /* secondary text */
+      --accent: #7ee8fa;      /* teal glow */
+      --accent-2: #ff9a9e;    /* pink glow */
+      --brand-1: #4ecdc4;     /* button gradient A */
+      --brand-2: #9b5de5;     /* button gradient B */
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --err: #ef4444;
+      /* surfaces */
+      --card: rgba(255,255,255,0.06);
+      --card-2: rgba(255,255,255,0.08);
+      /* borders/shadows */
+      --br: 16px;
+      --shadow-1: 0 10px 40px rgba(0,0,0,.35);
+      --shadow-2: 0 30px 80px rgba(0,0,0,.45);
+    }
+
+    /* Light theme overrides */
+    body.light {
+      --bg-0: #f7fafc;
+      --bg-1: #ffffff;
+      --text: #1f2937;
+      --muted: #4b5563;
+      --accent: #7c3aed;
+      --accent-2: #ec4899;
+      --card: rgba(0,0,0,0.05);
+      --card-2: rgba(0,0,0,0.08);
+      --shadow-1: 0 10px 30px rgba(0,0,0,.15);
+      --shadow-2: 0 30px 60px rgba(0,0,0,.18);
+    }
+
+    /* ============ BACKGROUND (PARALLAX + PLANETS) ============ */
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: radial-gradient(circle at 30% 120%, #0a0f1f 0%, #0a0f1f 20%, #120c27 55%, #000 100%);
-      min-height: 100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Inter", "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      background: radial-gradient(1200px 800px at 20% -10%, #1a1f3b 0%, var(--bg-0) 60%),
+                  radial-gradient(800px 500px at 120% 10%, #381a3b 0%, transparent 60%),
+                  var(--bg-0);
+      color: var(--text);
       overflow-x: hidden;
-      color: #fff;
     }
 
-    /* Aurora glow layer */
-    .aurora {
+    .space {
       position: fixed;
-      width: 220%;
-      height: 220%;
-      top: -60%;
-      left: -60%;
-      background: conic-gradient(
-        from 0deg at 50% 50%,
-        rgba(0, 255, 200, 0.14),
-        rgba(255, 0, 200, 0.14),
-        rgba(0, 150, 255, 0.14),
-        rgba(0, 255, 200, 0.14)
-      );
-      filter: blur(180px);
-      animation: auroraSpin 38s linear infinite;
-      z-index: 0;
+      inset: 0;
       pointer-events: none;
-    }
-    @keyframes auroraSpin {
-      0%   { transform: rotate(0deg) scale(1); }
-      50%  { transform: rotate(180deg) scale(1.15); }
-      100% { transform: rotate(360deg) scale(1); }
+      z-index: 0;
+      overflow: hidden;
     }
 
-    /* Stars */
-    .star {
-      position: fixed;
-      background: #fff;
-      border-radius: 50%;
-      opacity: 0.8;
-      animation: twinkle 3.2s infinite alternate ease-in-out;
-      z-index: 0;
-      pointer-events: none;
-    }
-    @keyframes twinkle {
-      from { opacity: 0.25; transform: scale(0.9); }
-      to   { opacity: 1;    transform: scale(1.15); }
+    /* Stars layers for parallax depth */
+    .stars, .stars2, .stars3 {
+      position: absolute; inset: 0;
+      background-repeat: repeat;
+      background-size: contain;
+      will-change: transform;
+      opacity: .8;
     }
 
-    /* Floating planets */
+    /* generate via shadows (lightweight) */
+    .stars { background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 2px 2px; opacity: .25; }
+    .stars2 { background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 3px 3px; opacity: .18; transform: translateY(0); }
+    .stars3 { background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 1px 1px; opacity: .1; }
+
+    @keyframes driftY {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-200px); }
+    }
+    .stars2 { animation: driftY 80s linear infinite; }
+    .stars3 { animation: driftY 140s linear infinite; }
+
+    /* Planets */
     .planet {
-      position: fixed;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #ff6b6b 0%, #b33939 60%, #5c1f1f 100%);
-      box-shadow: inset -8px -12px 24px rgba(0,0,0,0.35), 0 0 60px rgba(255,107,107,0.15);
-      animation: drift 62s linear infinite;
-      z-index: 0;
-      filter: saturate(1.1);
+      position: absolute; border-radius: 50%;
+      box-shadow: inset -20px -30px 60px rgba(0,0,0,0.35), 0 10px 50px rgba(0,0,0,.4);
+      filter: saturate(110%);
+    }
+
+    .planet.p1 {
+      width: 140px; height: 140px; top: 8%; left: 72%;
+      background: radial-gradient(circle at 30% 30%, #ffd1ff, #a56eff 55%, #5a35c8 100%);
+      animation: float1 16s ease-in-out infinite;
+    }
+    .planet.p2 {
+      width: 80px; height: 80px; top: 60%; left: 8%;
+      background: radial-gradient(circle at 35% 35%, #ffddb0, #ff8b6a 55%, #a13b3b 100%);
+      animation: float2 18s ease-in-out infinite;
+    }
+    .planet.p3 {
+      width: 220px; height: 220px; bottom: -40px; right: -40px;
+      background: radial-gradient(circle at 35% 35%, #b8fff3, #58d5d4 55%, #208b8e 100%);
+      opacity: .7; animation: slowSpin 60s linear infinite;
+    }
+
+    @keyframes float1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
+    @keyframes float2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(14px)} }
+    @keyframes slowSpin { to { transform: rotate(360deg); } }
+
+    /* Shooting stars */
+    .shooting {
+      position: absolute; inset: 0; overflow: hidden;
       pointer-events: none;
     }
-    .planet.blue {
-      background: radial-gradient(circle at 30% 30%, #45b7d1 0%, #1c5f75 60%, #0f2f3b 100%);
-      box-shadow: inset -8px -12px 24px rgba(0,0,0,0.35), 0 0 60px rgba(69,183,209,0.15);
+    .shoot {
+      position: absolute; width: 160px; height: 2px;
+      background: linear-gradient(90deg, rgba(255,255,255,.9), rgba(255,255,255,0));
+      top: -10px; left: -200px; opacity: 0;
     }
-    @keyframes drift {
-      0%   { transform: translate(-10vw, 10vh) rotate(0deg); }
-      50%  { transform: translate(80vw, -40vh) rotate(180deg); }
-      100% { transform: translate(-10vw, 10vh) rotate(360deg); }
+    @keyframes shootAnim {
+      0% { transform: translate3d(-200px,-200px,0) rotate(25deg); opacity: 0; }
+      5% { opacity: 1; }
+      100% { transform: translate3d(140vw, 100vh,0) rotate(25deg); opacity: 0; }
     }
 
-    /* ==== LAYOUT ==== */
+    /* ============ LAYOUT ============ */
     .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 20px;
-      position: relative;
-      z-index: 2; /* above background layers */
+      position: relative; z-index: 1;
+      max-width: 1200px; margin: 0 auto; padding: 24px;
     }
 
-    /* ==== HEADER ==== */
-    header {
+    header.hero {
+      padding: 64px 12px 36px;
+      display: grid; gap: 16px; justify-items: center;
       text-align: center;
-      margin-bottom: 60px;
-      padding: 80px 0 40px;
     }
 
+    .brand {
+      display: inline-grid; place-items: center;
+      gap: 8px;
+    }
     .logo {
-      font-size: 4rem;
-      background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
-      background-size: 300% 300%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: gradientShift 3s ease-in-out infinite;
-      font-weight: 900;
-      margin-bottom: 20px;
-      text-shadow:
-        0 0 30px rgba(255, 255, 255, 0.35),
-        0 0 70px rgba(78, 205, 196, 0.25);
+      font-weight: 900; letter-spacing: .5px;
+      font-size: clamp(36px, 6vw, 54px);
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      text-shadow: 0 6px 34px rgba(126,232,250,.2);
+      filter: drop-shadow(0 8px 24px rgba(0,0,0,.25));
     }
-    @keyframes gradientShift {
-      0%, 100% { background-position: 0% 50%; }
-      50%      { background-position: 100% 50%; }
+    .tagline { color: var(--muted); font-size: 1.05rem; max-width: 820px; }
+
+    .toolbar {
+      margin-top: 10px; display: flex; gap: 12px; align-items: center; justify-content: center;
+    }
+    .btn-theme {
+      background: var(--card-2);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text);
+      width: 44px; height: 44px; border-radius: 999px;
+      display: grid; place-items: center; cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: transform .2s ease, box-shadow .2s ease;
+      box-shadow: var(--shadow-1);
+    }
+    .btn-theme:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); }
+
+    /* ============ GRID ============ */
+    .grid {
+      display: grid; grid-template-columns: repeat(12, 1fr);
+      gap: 20px;
     }
 
-    .subtitle {
-      font-size: 1.25rem;
-      color: rgba(255, 255, 255, 0.9);
-      font-weight: 300;
-      margin-bottom: 20px;
-    }
+    .col-6 { grid-column: span 6; }
+    .col-12 { grid-column: span 12; }
 
-    .header-stats {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      margin-top: 30px;
-      flex-wrap: wrap;
-    }
-    .stat { text-align: center; color: white; }
-    .stat-number {
-      font-size: 2.5rem;
-      font-weight: 700;
-      display: block;
-      color: #4ecdc4;
-      text-shadow: 0 0 20px rgba(78,205,196,0.35);
-    }
-    .stat-label {
-      font-size: 0.9rem;
-      opacity: 0.85;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
+    @media (max-width: 980px) { .col-md-12 { grid-column: span 12; } }
+    @media (max-width: 640px) { .grid { gap: 14px; } }
 
-    /* ==== MAIN GRID ==== */
-    .main-content {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 50px;
-      margin-bottom: 60px;
-    }
-
-    /* ==== CARDS ==== */
+    /* ============ CARDS / FORMS ============ */
     .card {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      border-radius: 24px;
-      padding: 40px;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.25);
-      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-                  box-shadow 0.35s ease;
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--br);
+      padding: 28px;
+      box-shadow: var(--shadow-1);
       position: relative;
       overflow: hidden;
     }
-    .card::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle at 20% 20%, rgba(78,205,196,0.12), transparent 60%),
-                  radial-gradient(circle at 80% 80%, rgba(69,183,209,0.10), transparent 60%);
-      filter: blur(20px);
-      transition: transform 0.6s ease;
-    }
-    .card:hover::before { transform: scale(1.05); }
-    .card:hover {
-      transform: translateY(-8px) scale(1.02);
-      box-shadow:
-        0 20px 60px rgba(0, 0, 0, 0.35),
-        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+
+    .card:hover { box-shadow: var(--shadow-2); }
+
+    .card::after {
+      content: "";
+      position: absolute; inset: -2px -2px auto auto;
+      width: 240px; height: 240px;
+      background: radial-gradient(closest-side, rgba(126,232,250,0.15), transparent 60%);
+      transform: translate(30%, -30%);
+      pointer-events: none;
     }
 
-    .card-header { display: flex; align-items: center; margin-bottom: 30px; }
-    .card-icon {
-      width: 60px; height: 60px;
-      background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
-      border-radius: 16px;
-      display: flex; align-items: center; justify-content: center;
-      margin-right: 20px;
-      font-size: 24px;
-      color: white;
-      box-shadow: 0 8px 24px rgba(255, 107, 107, 0.3);
+    .card-head {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
     }
-    .card h2 { color: white; font-size: 1.8rem; font-weight: 700; letter-spacing: 0.4px; }
 
-    /* ==== FORM ==== */
-    .form-group { margin-bottom: 22px; }
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: rgba(255, 255, 255, 0.95);
-      font-size: 0.95rem;
+    .card-head .icon {
+      width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center;
+      color: #0b1020; font-size: 18px;
+      background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
     }
-    input, textarea, select {
-      width: 100%;
-      padding: 16px 18px;
-      background: rgba(255, 255, 255, 0.10);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: 14px;
-      font-size: 16px;
-      color: white;
-      backdrop-filter: blur(10px);
-      transition: all 0.25s ease;
+
+    .card-title {
+      font-weight: 700; font-size: 1.22rem; letter-spacing: .2px;
     }
-    textarea { min-height: 110px; resize: vertical; }
-    input::placeholder, textarea::placeholder { color: rgba(255, 255, 255, 0.6); }
-    input:focus, textarea:focus, select:focus {
+    .card-sub { color: var(--muted); font-size: .95rem; }
+
+    form .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    form .row-1 { grid-template-columns: 1fr; }
+    @media (max-width: 860px) { form .row { grid-template-columns: 1fr; } }
+
+    .field { display: grid; gap: 6px; }
+    .field label { font-size: .92rem; color: var(--muted); }
+    .field input, .field select, .field textarea {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 12px 14px;
       outline: none;
-      border-color: #4ecdc4;
-      background: rgba(255, 255, 255, 0.14);
-      box-shadow: 0 0 22px rgba(78, 205, 196, 0.35);
+      transition: border-color .2s ease, background .2s ease, transform .12s ease;
+      backdrop-filter: blur(6px);
+    }
+    body.light .field input, body.light .field select, body.light .field textarea {
+      background: rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.12);
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--accent);
       transform: translateY(-1px);
+      box-shadow: 0 0 0 3px rgba(126,232,250,.18);
     }
+    .field textarea { min-height: 110px; resize: vertical; }
 
-    /* ==== BUTTON ==== */
+    .actions {
+      display: flex; gap: 10px; align-items: center; justify-content: flex-end; margin-top: 10px;
+    }
     .btn {
-      background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 50%, #45b7d1 100%);
-      background-size: 220% 220%;
-      color: white;
-      border: none;
-      padding: 16px 38px;
-      border-radius: 50px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.3s ease, background-position 0.7s ease;
-      width: 100%;
-      letter-spacing: 0.6px;
-      position: relative;
-      overflow: hidden;
-      text-transform: uppercase;
+      border: 0; border-radius: 999px; padding: 12px 18px; cursor: pointer; color: white;
+      background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
     }
-    .btn:hover {
-      transform: translateY(-2px);
-      background-position: 100% 0%;
-      box-shadow: 0 15px 35px rgba(255, 107, 107, 0.35);
-    }
-    .btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+    .btn:hover { transform: translateY(-1px) scale(1.01); filter: brightness(1.05); box-shadow: var(--shadow-2); }
+    .btn:disabled { opacity: .6; cursor: not-allowed; transform: none; filter: none; }
 
-    /* ==== LOADING ==== */
-    .loading { display: none; text-align: center; margin: 26px 0; }
-    .loading-container { display: flex; align-items: center; justify-content: center; flex-direction: column; }
+    /* ============ LOADING ============ */
+    .loading {
+      display: none; margin: 16px 0; display: grid; gap: 10px; justify-items: center;
+    }
     .spinner {
-      width: 54px; height: 54px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: #4ecdc4;
+      width: 42px; height: 42px; border-radius: 999px;
+      border: 3px solid rgba(255,255,255,.24);
+      border-top-color: var(--accent);
       animation: spin 1s linear infinite;
-      margin-bottom: 16px;
     }
-    .loading-text { color: rgba(255,255,255,0.95); font-size: 1.05rem; font-weight: 600; }
-    .loading-dots::after { content: ''; animation: dots 1.4s steps(5, end) infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes dots {
-      0%, 20% { content: '.'; }
-      40%     { content: '..'; }
-      60%     { content: '...'; }
-      90%,100%{ content: ''; }
-    }
+    .loading p { color: var(--muted); font-size: .95rem; }
 
-    /* ==== RESULTS ==== */
+    /* ============ RESULTS ============ */
     .result {
-      margin-top: 32px;
-      background: rgba(255, 255, 255, 0.06);
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(18px);
-      display: none;
-      overflow: hidden;
+      display: none; margin-top: 16px; overflow: hidden; border-radius: var(--br);
+      background: var(--card); border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: var(--shadow-1);
     }
-    .result-header {
-      padding: 22px 26px;
-      background: linear-gradient(135deg, #4ecdc4, #45b7d1);
-      color: white;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-    }
-    .result-header h3 {
-      font-size: 1.28rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      letter-spacing: 0.3px;
-    }
-    .result-header i { margin-right: 12px; font-size: 1.1rem; }
+    .result.show { display: block; animation: reveal .7s cubic-bezier(.16,.84,.44,1); }
+    @keyframes reveal { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
 
-    .result-content { padding: 26px; }
-    .result-section {
-      margin-bottom: 18px;
+    .result-head {
+      padding: 18px 22px;
+      background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+      color: #0b1020;
+      display: flex; align-items: center; gap: 10px; justify-content: space-between;
+    }
+    .result-title { font-weight: 800; letter-spacing: .2px; }
+    .result-body {
       padding: 22px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 14px;
-      border-left: 4px solid #4ecdc4;
-      transition: transform 0.25s ease;
-    }
-    .result-section:hover { transform: translateX(5px); }
-    .result-section h4 {
-      color: #4ecdc4; margin-bottom: 10px; font-size: 1.08rem; font-weight: 700;
-    }
-    .result-section p {
-      color: rgba(255, 255, 255, 0.92);
-      line-height: 1.7;
-      font-size: 1rem;
+      display: grid; gap: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.02), transparent);
     }
 
-    .error .result-header { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
-
-    /* ==== FOOTER ==== */
-    .footer {
-      text-align: center;
-      color: rgba(255, 255, 255, 0.85);
-      margin-top: 70px;
-      padding: 34px 0 18px;
-      border-top: 1px solid rgba(255, 255, 255, 0.15);
+    .block {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      border-left-width: 4px; border-left-color: var(--accent);
+      border-radius: 12px;
+      padding: 14px 14px 10px 14px;
       position: relative;
-      z-index: 2;
+      overflow: hidden;
+      transform-origin: top left;
+      animation: blockIn .55s cubic-bezier(.16,.84,.44,1);
     }
-    .footer-content { display: flex; justify-content: center; align-items: center; gap: 26px; flex-wrap: wrap; }
-    .social-links { display: flex; gap: 18px; }
-    .social-links a { color: rgba(255, 255, 255, 0.75); font-size: 1.4rem; transition: all 0.25s ease; }
-    .social-links a:hover { color: #4ecdc4; transform: translateY(-3px); }
+    @keyframes blockIn { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
 
-    .footer-line {
-      margin-top: 10px;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1rem;
-      color: #fff;
-      text-shadow: 0 0 10px #4ecdc4, 0 0 20px #45b7d1, 0 0 30px #ff6b6b;
+    .block h4 { margin: 0 0 6px; font-size: 1.02rem; letter-spacing: .2px; }
+    .block p { margin: 0; color: var(--text); opacity: .96; }
+
+    .copy {
+      position: absolute; top: 10px; right: 10px;
+      display: inline-flex; align-items: center; gap: 6px;
+      border-radius: 999px; border: 1px solid rgba(255,255,255,.18);
+      padding: 6px 10px; background: rgba(255,255,255,.08);
+      color: var(--text); cursor: pointer; font-size: .86rem;
+      transition: transform .2s ease, background .2s ease, border-color .2s ease;
+    }
+    .copy:hover { transform: translateY(-1px); background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.25); }
+
+    /* error result */
+    .result.error .result-head { background: linear-gradient(135deg, #fb7185, #f97316); color: #0b1020; }
+
+    /* ============ FOOTER ============ */
+    footer {
+      margin: 42px auto 32px; text-align: center; color: var(--muted);
+      display: grid; gap: 8px; justify-items: center;
+    }
+    .kavya {
+      font-weight: 800; letter-spacing: .4px;
+      color: var(--accent);
+      text-shadow: 0 0 0 rgba(0,0,0,0);
+      animation: glow 2.4s ease-in-out infinite;
+    }
+    @keyframes glow {
+      50% { text-shadow: 0 0 18px rgba(126,232,250,.65); }
     }
 
-    /* ==== RESPONSIVE ==== */
-    @media (max-width: 1200px) { .container { max-width: 100%; } }
-    @media (max-width: 900px)  { .main-content { grid-template-columns: 1fr; gap: 34px; } }
-    @media (max-width: 768px)  {
-      .logo { font-size: 2.6rem; }
-      .card { padding: 28px 22px; }
-      .header-stats { gap: 22px; }
-      .result-content { padding: 22px; }
-    }
-
-    /* ==== SCROLLBAR ==== */
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.06); }
-    ::-webkit-scrollbar-thumb {
-      background: linear-gradient(135deg, #4ecdc4, #45b7d1);
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(135deg, #45b7d1, #4ecdc4);
+    /* ============ UTILS ============ */
+    .hidden { display: none !important; }
+    .muted { color: var(--muted); }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
     }
   </style>
 </head>
 
 <body>
-  <!-- AURORA + BACKGROUND OBJECTS -->
-  <div class="aurora" aria-hidden="true"></div>
+  <!-- BACKGROUND LAYERS -->
+  <div class="space" aria-hidden="true">
+    <div class="stars"></div>
+    <div class="stars2"></div>
+    <div class="stars3"></div>
+    <div class="planet p1"></div>
+    <div class="planet p2"></div>
+    <div class="planet p3"></div>
+    <div class="shooting" id="shooting"></div>
+  </div>
 
+  <!-- CONTENT -->
   <div class="container">
-    <!-- HEADER -->
-    <header>
-      <div class="logo">AI Portfolio</div>
-      <p class="subtitle">Transform your marketing vision into compelling case studies and winning proposals</p>
+    <!-- HERO -->
+    <header class="hero" role="banner">
+      <div class="brand" aria-label="Brand">
+        <div class="logo">AI Portfolio</div>
+        <p class="tagline">
+          Transform your marketing vision into compelling <strong>case studies</strong> and winning <strong>proposals</strong>—powered by AI.
+        </p>
+      </div>
 
-      <div class="header-stats">
-        <div class="stat">
-          <span class="stat-number" data-count="1000">0</span>
-          <span class="stat-label">Case Studies Generated</span>
-        </div>
-        <div class="stat">
-          <span class="stat-number" data-count="500">0</span>
-          <span class="stat-label">Proposals Created</span>
-        </div>
-        <div class="stat">
-          <span class="stat-number" data-count="95">0</span>
-          <span class="stat-label">Success Rate %</span>
-        </div>
+      <div class="toolbar" role="region" aria-label="Toolbar">
+        <button class="btn-theme" id="themeToggle" aria-label="Toggle theme" title="Toggle dark/light">
+          <i class="fa-solid fa-moon"></i>
+        </button>
       </div>
     </header>
 
-    <!-- MAIN -->
-    <div class="main-content">
-      <!-- CASE STUDY CARD -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon"><i class="fas fa-chart-line"></i></div>
-          <h2>Case Study Generator</h2>
+    <!-- GRID: CASE STUDY + PROPOSAL -->
+    <section class="grid" aria-label="Generators">
+      <!-- CASE STUDY -->
+      <article class="card col-6 col-md-12" aria-labelledby="cs-title">
+        <div class="card-head">
+          <div class="icon"><i class="fa-solid fa-chart-line"></i></div>
+          <div>
+            <div id="cs-title" class="card-title">Case Study Generator</div>
+            <div class="card-sub">Give us your project details — we’ll craft a crisp, client-ready case study.</div>
+          </div>
         </div>
 
-        <form id="caseStudyForm">
-          <div class="form-group">
-            <label for="projectTitle"><i class="fas fa-rocket"></i> Project Title</label>
-            <input type="text" id="projectTitle" required placeholder="e.g., Revolutionary Social Media Campaign"/>
+        <form id="caseStudyForm" autocomplete="on" novalidate>
+          <div class="row">
+            <div class="field">
+              <label for="projectTitle"><i class="fa-solid fa-rocket"></i> Project Title</label>
+              <input id="projectTitle" name="projectTitle" placeholder="Ex: Revolutionary Social Media Campaign" required />
+            </div>
+            <div class="field">
+              <label for="client"><i class="fa-regular fa-building"></i> Client / Company</label>
+              <input id="client" name="client" placeholder="Ex: TechFlow Industries" required/>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="client"><i class="fas fa-building"></i> Client/Company</label>
-            <input type="text" id="client" required placeholder="e.g., TechFlow Industries"/>
+          <div class="row">
+            <div class="field">
+              <label for="industry"><i class="fa-solid fa-industry"></i> Industry</label>
+              <select id="industry" name="industry" required>
+                <option value="">Select Industry</option>
+                <option>Technology</option>
+                <option>Healthcare</option>
+                <option>Finance</option>
+                <option>E-commerce</option>
+                <option>Education</option>
+                <option>Real Estate</option>
+                <option>Food & Beverage</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="objectives"><i class="fa-solid fa-bullseye"></i> Objectives</label>
+              <textarea id="objectives" name="objectives" placeholder="Define your goals and success criteria…" required></textarea>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="industry"><i class="fas fa-industry"></i> Industry</label>
-            <select id="industry" required>
-              <option value="">Select Industry</option>
-              <option value="Technology">🚀 Technology</option>
-              <option value="Healthcare">🏥 Healthcare</option>
-              <option value="Finance">💰 Finance</option>
-              <option value="E-commerce">🛒 E-commerce</option>
-              <option value="Education">📚 Education</option>
-              <option value="Real Estate">🏠 Real Estate</option>
-              <option value="Food & Beverage">🍽️ Food & Beverage</option>
-              <option value="Other">✨ Other</option>
-            </select>
+          <div class="row">
+            <div class="field">
+              <label for="tactics"><i class="fa-solid fa-chess"></i> Tactics</label>
+              <textarea id="tactics" name="tactics" placeholder="Key levers, channels, and playbooks…" required></textarea>
+            </div>
+
+            <div class="field">
+              <label for="results"><i class="fa-solid fa-trophy"></i> Results</label>
+              <textarea id="results" name="results" placeholder="Outcomes, KPIs, business impact…" required></textarea>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="objectives"><i class="fas fa-bullseye"></i> Project Objectives</label>
-            <textarea id="objectives" required placeholder="Define your ambitious goals and vision..."></textarea>
+          <div class="actions">
+            <button type="submit" id="btnCS" class="btn">
+              <i class="fa-solid fa-magic-wand-sparkles"></i>
+              &nbsp;Generate Case Study
+            </button>
           </div>
-
-          <div class="form-group">
-            <label for="tactics"><i class="fas fa-chess"></i> Strategic Tactics</label>
-            <textarea id="tactics" required placeholder="Describe your innovative approaches and methodologies..."></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="results"><i class="fas fa-trophy"></i> Results Achieved</label>
-            <textarea id="results" required placeholder="Showcase your impressive outcomes and metrics..."></textarea>
-          </div>
-
-          <button type="submit" class="btn">
-            <i class="fas fa-magic"></i> Generate Case Study
-          </button>
         </form>
 
-        <div class="loading" id="caseStudyLoading">
-          <div class="loading-container">
-            <div class="spinner"></div>
-            <p class="loading-text loading-dots">Crafting your professional case study</p>
+        <!-- Loading -->
+        <div id="csLoading" class="loading" aria-live="polite" aria-atomic="true">
+          <div class="spinner" role="status" aria-label="Loading"></div>
+          <p>Crafting your professional case study…</p>
+        </div>
+
+        <!-- Results -->
+        <section id="caseStudyResult" class="result" aria-live="polite" aria-atomic="true"></section>
+      </article>
+
+      <!-- PROPOSAL -->
+      <article class="card col-6 col-md-12" aria-labelledby="pp-title">
+        <div class="card-head">
+          <div class="icon"><i class="fa-solid fa-handshake-angle"></i></div>
+          <div>
+            <div id="pp-title" class="card-title">Proposal Generator</div>
+            <div class="card-sub">Turn your inputs into a winning strategy outline for clients.</div>
           </div>
         </div>
 
-        <div class="result" id="caseStudyResult"></div>
-      </div>
-
-      <!-- PROPOSAL CARD -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon"><i class="fas fa-handshake"></i></div>
-          <h2>Proposal Generator</h2>
-        </div>
-
-        <form id="proposalForm">
-          <div class="form-group">
-            <label for="companyName"><i class="fas fa-building"></i> Company Name</label>
-            <input type="text" id="companyName" required placeholder="e.g., Future Innovations Corp"/>
+        <form id="proposalForm" autocomplete="on" novalidate>
+          <div class="row">
+            <div class="field">
+              <label for="companyName"><i class="fa-regular fa-building"></i> Company Name</label>
+              <input id="companyName" name="companyName" placeholder="Ex: Future Innovations Corp" required/>
+            </div>
+            <div class="field">
+              <label for="businessType"><i class="fa-solid fa-chart-pie"></i> Business Type</label>
+              <select id="businessType" name="businessType" required>
+                <option value="">Select</option>
+                <option>Startup</option>
+                <option>Small Business</option>
+                <option>Medium Enterprise</option>
+                <option>Large Corporation</option>
+                <option>Non-profit</option>
+              </select>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="businessType"><i class="fas fa-chart-pie"></i> Business Type</label>
-            <select id="businessType" required>
-              <option value="">Select Business Type</option>
-              <option value="Startup">🚀 Startup</option>
-              <option value="Small Business">🏪 Small Business</option>
-              <option value="Medium Enterprise">🏢 Medium Enterprise</option>
-              <option value="Large Corporation">🏛️ Large Corporation</option>
-              <option value="Non-profit">❤️ Non-profit</option>
-            </select>
+          <div class="row">
+            <div class="field">
+              <label for="marketingGoals"><i class="fa-solid fa-bullseye"></i> Marketing Goals</label>
+              <textarea id="marketingGoals" name="marketingGoals" placeholder="Acquisition, retention, expansion…"
+                        required></textarea>
+            </div>
+            <div class="field">
+              <label for="currentChallenges"><i class="fa-solid fa-mountain"></i> Current Challenges</label>
+              <textarea id="currentChallenges" name="currentChallenges" placeholder="Constraints, blockers, risks…"
+                        required></textarea>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="marketingGoals"><i class="fas fa-target"></i> Marketing Goals</label>
-            <textarea id="marketingGoals" required placeholder="Share your ambitious marketing objectives..."></textarea>
+          <div class="row">
+            <div class="field">
+              <label for="budget"><i class="fa-solid fa-dollar-sign"></i> Budget Range</label>
+              <select id="budget" name="budget" required>
+                <option value="">Select</option>
+                <option>Under $5,000</option>
+                <option>$5,000 - $15,000</option>
+                <option>$15,000 - $50,000</option>
+                <option>$50,000 - $100,000</option>
+                <option>Over $100,000</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="timeline"><i class="fa-regular fa-clock"></i> Timeline</label>
+              <select id="timeline" name="timeline" required>
+                <option value="">Select</option>
+                <option>1-3 months</option>
+                <option>3-6 months</option>
+                <option>6-12 months</option>
+                <option>Ongoing</option>
+              </select>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="currentChallenges"><i class="fas fa-mountain"></i> Current Challenges</label>
-            <textarea id="currentChallenges" required placeholder="Describe the obstacles you're facing..."></textarea>
+          <div class="actions">
+            <button type="submit" id="btnPP" class="btn">
+              <i class="fa-solid fa-paper-plane"></i>
+              &nbsp;Generate Proposal
+            </button>
           </div>
-
-          <div class="form-group">
-            <label for="budget"><i class="fas fa-dollar-sign"></i> Budget Range</label>
-            <select id="budget" required>
-              <option value="">Select Budget Range</option>
-              <option value="Under $5,000">💡 Under $5,000</option>
-              <option value="$5,000 - $15,000">💰 $5,000 - $15,000</option>
-              <option value="$15,000 - $50,000">💎 $15,000 - $50,000</option>
-              <option value="$50,000 - $100,000">🔥 $50,000 - $100,000</option>
-              <option value="Over $100,000">👑 Over $100,000</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="timeline"><i class="fas fa-clock"></i> Timeline</label>
-            <select id="timeline" required>
-              <option value="">Select Timeline</option>
-              <option value="1-3 months">⚡ 1-3 months</option>
-              <option value="3-6 months">🎯 3-6 months</option>
-              <option value="6-12 months">🚀 6-12 months</option>
-              <option value="Ongoing">🔄 Ongoing Partnership</option>
-            </select>
-          </div>
-
-          <button type="submit" class="btn">
-            <i class="fas fa-paper-plane"></i> Generate Proposal
-          </button>
         </form>
 
-        <div class="loading" id="proposalLoading">
-          <div class="loading-container">
-            <div class="spinner"></div>
-            <p class="loading-text loading-dots">Creating your winning proposal</p>
-          </div>
+        <!-- Loading -->
+        <div id="ppLoading" class="loading" aria-live="polite" aria-atomic="true">
+          <div class="spinner" role="status" aria-label="Loading"></div>
+          <p>Creating your winning proposal…</p>
         </div>
 
-        <div class="result" id="proposalResult"></div>
-      </div>
-    </div>
+        <!-- Results -->
+        <section id="proposalResult" class="result" aria-live="polite" aria-atomic="true"></section>
+      </article>
+    </section>
 
     <!-- FOOTER -->
-    <footer class="footer">
-      <div class="footer-content">
-        <p>Built with ❤️ using cutting-edge AI • Deployed on Netlify</p>
-        <div class="social-links">
-          <a href="#"><i class="fab fa-linkedin"></i></a>
-          <a href="#"><i class="fab fa-github"></i></a>
-          <a href="#"><i class="fab fa-x-twitter"></i></a>
-        </div>
-      </div>
-      <div class="footer-line">✨ Made by Kavya ✨</div>
+    <footer role="contentinfo">
+      <div>Built with ⚡ AI • Deployed on Netlify</div>
+      <div>Made with 💜 by <span class="kavya">Kavya</span></div>
     </footer>
   </div>
 
+  <!-- SCRIPTS -->
   <script>
-    /* ===== BACKGROUND OBJECTS (STARS + PLANETS) ===== */
-    (function initBackground() {
-      // Stars
-      const starCount = 130;
-      for (let i = 0; i < starCount; i++) {
-        const s = document.createElement('div');
-        s.className = 'star';
-        const size = Math.random() * 2.4 + 0.8;
-        s.style.width = size + 'px';
-        s.style.height = size + 'px';
-        s.style.top = Math.random() * 100 + 'vh';
-        s.style.left = Math.random() * 100 + 'vw';
-        s.style.animationDuration = (Math.random() * 3 + 2) + 's';
-        s.style.animationDelay = (Math.random() * 3) + 's';
-        document.body.appendChild(s);
-      }
-      // Planets
-      const planets = [
-        { size: 80 + Math.random() * 70, class: 'planet', top: '70vh', left: '-10vw', dur: 60 + Math.random() * 35 },
-        { size: 70 + Math.random() * 60, class: 'planet blue', top: '20vh', left: '-12vw', dur: 70 + Math.random() * 40 }
-      ];
-      planets.forEach(p => {
-        const el = document.createElement('div');
-        el.className = p.class;
-        el.style.width = p.size + 'px';
-        el.style.height = p.size + 'px';
-        el.style.top = p.top;
-        el.style.left = p.left;
-        el.style.animationDuration = p.dur + 's';
-        document.body.appendChild(el);
+    // ===================== THEME TOGGLE =====================
+    (function themeInit(){
+      const saved = localStorage.getItem("theme");
+      if (saved === "light") document.body.classList.add("light");
+      updateToggleIcon();
+      document.getElementById("themeToggle").addEventListener("click", ()=>{
+        document.body.classList.toggle("light");
+        localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark");
+        updateToggleIcon();
       });
+      function updateToggleIcon(){
+        const isLight = document.body.classList.contains("light");
+        document.getElementById("themeToggle").innerHTML = isLight
+          ? '<i class="fa-solid fa-sun"></i>'
+          : '<i class="fa-solid fa-moon"></i>';
+        document.querySelector('meta[name="theme-color"]')?.setAttribute("content", isLight ? "#ffffff" : "#111827");
+      }
     })();
 
-    /* ===== COUNTER ANIMATION ===== */
-    function animateCounters() {
-      const counters = document.querySelectorAll('.stat-number');
-      counters.forEach(counter => {
-        const target = parseInt(counter.getAttribute('data-count'), 10);
-        const increment = Math.max(1, Math.floor(target / 100));
-        let current = 0;
-        const timer = setInterval(() => {
-          current += increment;
-          if (current >= target) {
-            counter.textContent = target;
-            clearInterval(timer);
-          } else {
-            counter.textContent = Math.ceil(current);
-          }
-        }, 20);
+    // ===================== SHOOTING STARS =====================
+    (function shootingStars(){
+      const wrap = document.getElementById("shooting");
+      function spawn(){
+        const el = document.createElement("div");
+        el.className = "shoot";
+        // random stagger
+        const delay = Math.random() * 6 + 1; // 1-7s
+        el.style.animation = `shootAnim ${Math.random() * 2 + 1.5}s ease-out ${delay}s forwards`;
+        wrap.appendChild(el);
+        // cleanup after 10s
+        setTimeout(()=>wrap.removeChild(el), 10000);
+      }
+      setInterval(spawn, 1800);
+    })();
+
+    // ===================== HELPERS =====================
+    function el(id){ return document.getElementById(id); }
+    function qs(sel, root=document){ return root.querySelector(sel); }
+
+    function setLoading(type, on){
+      const map = {
+        "case-study": { btn: "btnCS", load: "csLoading" },
+        "proposal": { btn: "btnPP", load: "ppLoading" }
+      };
+      const { btn, load } = map[type];
+      el(btn).disabled = on;
+      el(load).style.display = on ? "grid" : "none";
+    }
+
+    function copyBlock(btn){
+      // get the text inside the block excluding the Copy button text
+      const block = btn.closest(".block");
+      const copy = block.cloneNode(true);
+      // remove the button in clone
+      const b = copy.querySelector(".copy"); if (b) b.remove();
+      const text = copy.innerText.trim();
+      navigator.clipboard.writeText(text).then(()=>{
+        const original = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
+        btn.style.filter = 'brightness(1.2)';
+        setTimeout(()=>{ btn.innerHTML = original; btn.style.filter = 'none'; }, 1400);
+      }).catch(()=>{
+        btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Failed';
+        setTimeout(()=>{ btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy'; }, 1400);
       });
     }
-    document.addEventListener('DOMContentLoaded', () => setTimeout(animateCounters, 400));
 
-    /* ===== API HANDLERS ===== */
-    async function generateContent(type, data, loadingId, resultId, renderFunction) {
-      const loading = document.getElementById(loadingId);
-      const result = document.getElementById(resultId);
-      const submitBtn = document.querySelector(`#${type === 'case-study' ? 'caseStudyForm' : 'proposalForm'} button`);
+    function renderCaseStudy(data, container){
+      const cs = data?.case_study || {};
+      container.classList.remove("error");
+      container.innerHTML = `
+        <div class="result-head">
+          <div class="result-title"><i class="fa-regular fa-file-lines"></i> &nbsp;Professional Case Study</div>
+          <div class="muted">Client-ready format</div>
+        </div>
+        <div class="result-body">
+          ${section("Introduction", cs.introduction)}
+          ${section("Challenge", cs.challenge)}
+          ${section("Solution", cs.solution)}
+          ${section("Results", cs.results)}
+        </div>`;
+      container.classList.add("show");
+    }
 
-      loading.style.display = 'block';
-      result.style.display = 'none';
-      submitBtn.disabled = true;
+    function renderProposal(data, container){
+      const p = data?.proposal_outline || {};
+      container.classList.remove("error");
+      container.innerHTML = `
+        <div class="result-head">
+          <div class="result-title"><i class="fa-solid fa-handshake"></i> &nbsp;Strategic Proposal</div>
+          <div class="muted">Concise & actionable</div>
+        </div>
+        <div class="result-body">
+          ${section("Executive Summary", p.executive_summary)}
+          ${section("Recommended Strategy", p.strategy)}
+          ${section("Key Deliverables", p.deliverables)}
+          ${section("Timeline & Investment", p.timeline_investment)}
+          ${section("Next Steps", p.next_steps)}
+        </div>`;
+      container.classList.add("show");
+    }
+
+    function renderError(container, message){
+      container.classList.add("error","show");
+      container.innerHTML = `
+        <div class="result-head">
+          <div class="result-title"><i class="fa-solid fa-triangle-exclamation"></i> &nbsp;Generation Failed</div>
+          <div class="muted">Please review your API config</div>
+        </div>
+        <div class="result-body">
+          <div class="block" style="border-left-color:#fb7185">
+            <button class="copy" onclick="copyBlock(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+            <h4>Details</h4>
+            <p>${message}</p>
+          </div>
+        </div>`;
+    }
+
+    function section(title, text){
+      const safe = (text || "—").toString()
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+      return `
+        <div class="block">
+          <button class="copy" onclick="copyBlock(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+          <h4>${title}</h4>
+          <p>${safe}</p>
+        </div>`;
+    }
+
+    // ===================== API CALL =====================
+    async function generate(type, data, resultId, loadingId){
+      const result = el(resultId);
+      result.classList.remove("show","error");
+      result.innerHTML = "";
+      setLoading(type, true);
 
       try {
-        const response = await fetch('/.netlify/functions/generate-content', {
+        const res = await fetch('/.netlify/functions/generate-content', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type, data })
         });
 
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(`HTTP ${res.status} • ${text.slice(0, 300)}`);
+        }
 
-        const responseData = await response.json();
-        renderFunction(responseData, result);
+        const json = await res.json();
+        if (type === "case-study") renderCaseStudy(json, result);
+        else renderProposal(json, result);
 
-      } catch (error) {
-        console.error('Error:', error);
-        result.innerHTML = `
-          <div class="result-header error">
-            <h3><i class="fas fa-exclamation-triangle"></i> Generation Failed</h3>
-          </div>
-          <div class="result-content">
-            <div class="result-section">
-              <p>Unable to generate content. Please check your API configuration and try again.</p>
-              <p><small>Error: ${error.message}</small></p>
-            </div>
-          </div>
-        `;
+      } catch (err) {
+        console.error(err);
+        renderError(result, err.message || "Unknown error");
       } finally {
-        loading.style.display = 'none';
-        result.style.display = 'block';
-        submitBtn.disabled = false;
+        setLoading(type, false);
       }
     }
 
-    /* ===== FORM SUBMISSIONS ===== */
-    document.getElementById('caseStudyForm').addEventListener('submit', async (e) => {
+    // ===================== FORM HANDLERS =====================
+    el("caseStudyForm").addEventListener("submit", (e)=>{
       e.preventDefault();
-      const data = {
-        projectTitle: document.getElementById('projectTitle').value,
-        client: document.getElementById('client').value,
-        industry: document.getElementById('industry').value,
-        objectives: document.getElementById('objectives').value,
-        tactics: document.getElementById('tactics').value,
-        results: document.getElementById('results').value
+      const payload = {
+        projectTitle: el("projectTitle").value.trim(),
+        client: el("client").value.trim(),
+        industry: el("industry").value,
+        objectives: el("objectives").value.trim(),
+        tactics: el("tactics").value.trim(),
+        results: el("results").value.trim(),
       };
-      await generateContent('case-study', data, 'caseStudyLoading', 'caseStudyResult', renderCaseStudy);
+      generate("case-study", payload, "caseStudyResult", "csLoading");
     });
 
-    document.getElementById('proposalForm').addEventListener('submit', async (e) => {
+    el("proposalForm").addEventListener("submit", (e)=>{
       e.preventDefault();
-      const data = {
-        companyName: document.getElementById('companyName').value,
-        businessType: document.getElementById('businessType').value,
-        marketingGoals: document.getElementById('marketingGoals').value,
-        currentChallenges: document.getElementById('currentChallenges').value,
-        budget: document.getElementById('budget').value,
-        timeline: document.getElementById('timeline').value
+      const payload = {
+        companyName: el("companyName").value.trim(),
+        businessType: el("businessType").value,
+        marketingGoals: el("marketingGoals").value.trim(),
+        currentChallenges: el("currentChallenges").value.trim(),
+        budget: el("budget").value,
+        timeline: el("timeline").value,
       };
-      await generateContent('proposal', data, 'proposalLoading', 'proposalResult', renderProposal);
+      generate("proposal", payload, "proposalResult", "ppLoading");
     });
-
-    /* ===== RENDERERS ===== */
-    function renderCaseStudy(data, container) {
-      const cs = data.case_study || {};
-      container.innerHTML = `
-        <div class="result-header">
-          <h3><i class="fas fa-file-alt"></i> Professional Case Study Generated</h3>
-        </div>
-        <div class="result-content">
-          <div class="result-section">
-            <h4><i class="fas fa-info-circle"></i> Introduction</h4>
-            <p>${cs.introduction || ''}</p>
-          </div>
-          <div class="result-section">
-            <h4><i class="fas fa-exclamation-circle"></i> Challenge</h4>
-            <p>${cs.challenge || ''}</p>
-          </div>
-          <div class="result-section">
-            <h4><i class="fas fa-lightbulb"></i> Solution</h4>
-            <p>${cs.solution || ''}</p>
-          </div>
-          <div class="result-section">
-            <h4><i class="fas fa-trophy"></i> Results</h4>
-            <p>${cs.results || ''}</p>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderProposal(data, container) {
-      const p = data.proposal_outline || {};
-      container.innerHTML = `
-        <div class="result-header">
-          <h3><i class="fas fa-handshake"></i> Strategic Proposal Generated</h3>
-        </div>
-        <div class="result-content">
-          <div class="result-section">
-            <h4><i class="fas fa-file-alt"></i> Executive Summary</h4>
-            <p>${p.executive_summary || ''}</p>
-          </div>
-          <div class="result-section">
-            <h4><i class="fas fa-chess-knight"></i> Recommended Strategy</h4>
-            <p>${p.strategy || ''}</p>
-          </div>
-          <div class="result-section">
-            <h4><i class="fas fa-tasks"></i> Key Deliverables</h4>
-            <p>${p.deliverables || ''}</p>
-          </div>
-          <div class="result-section">
-            <h4><i class="fas fa-calendar-alt"></i> Timeline & Investment</h4>
-            <p>${p.timeline_investment || ''}</p>
-          </div>
-          <div class="result-section">
-            <h4><i class="fas fa-arrow-right"></i> Next Steps</h4>
-            <p>${p.next_steps || ''}</p>
-          </div>
-        </div>
-      `;
-    }
   </script>
 </body>
 </html>
