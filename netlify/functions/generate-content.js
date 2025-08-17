@@ -14,7 +14,6 @@ exports.handler = async (event, context) => {
     };
   }
 
-  // Allow only POST
   if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
@@ -29,7 +28,7 @@ exports.handler = async (event, context) => {
   try {
     const { type, data } = JSON.parse(event.body);
 
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.GOOGLE_API_KEY;
     if (!apiKey) {
       return {
         statusCode: 500,
@@ -37,7 +36,7 @@ exports.handler = async (event, context) => {
           "Access-Control-Allow-Origin": "*",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ error: "OpenAI API key not configured" }),
+        body: JSON.stringify({ error: "Google API key not configured" }),
       };
     }
 
@@ -59,7 +58,7 @@ Sections needed:
 3. Solution (2–3 sentences)
 4. Results (2–3 sentences)
 
-Respond in JSON with this structure:
+Respond ONLY in JSON with this structure:
 ${JSON.stringify(
   {
     case_study: {
@@ -98,7 +97,7 @@ Sections needed:
 4. Timeline & Investment
 5. Next Steps
 
-Respond in JSON with this structure:
+Respond ONLY in JSON with this structure:
 ${JSON.stringify(
   {
     proposal_outline: {
@@ -126,50 +125,40 @@ ${JSON.stringify(
       throw new Error("Invalid content type");
     }
 
-    // Call OpenAI
-    const openAIResponse = await fetch(
-      "https://api.openai.com/v1/chat/completions",
+    // ✅ Call Gemini 2.0 Flash API
+    const geminiResp = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
+          "X-goog-api-key": apiKey, // use header (matches your curl)
         },
         body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are an expert marketing strategist. Always respond in **valid JSON** format.",
-            },
-            { role: "user", content: prompt },
-          ],
-          max_tokens: 1000,
-          temperature: 0.7,
+          contents: [{ parts: [{ text: prompt }] }],
         }),
       }
     );
 
-    if (!openAIResponse.ok) {
-      const errorData = await openAIResponse.text();
-      console.error("OpenAI API error:", errorData);
-      throw new Error(`OpenAI API error: ${openAIResponse.status}`);
+    if (!geminiResp.ok) {
+      const errorData = await geminiResp.text();
+      console.error("Gemini API error:", errorData);
+      throw new Error(`Gemini API error: ${geminiResp.status}`);
     }
 
-    const aiResult = await openAIResponse.json();
+    const aiResult = await geminiResp.json();
 
     let generatedContent;
     try {
-      const aiContent = aiResult.choices[0].message.content.trim();
+      const aiContent =
+        aiResult.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
       const jsonMatch = aiContent.match(/\{[\s\S]*\}/);
       generatedContent = jsonMatch
         ? JSON.parse(jsonMatch[0])
-        : JSON.parse(aiContent);
+        : responseStructure;
     } catch (err) {
       console.error("JSON parse error:", err);
-      // fallback default
-      generatedContent = responseStructure;
+      generatedContent = responseStructure; // fallback
     }
 
     return {
