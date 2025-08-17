@@ -14,6 +14,7 @@ exports.handler = async (event, context) => {
     };
   }
 
+  // Only POST allowed
   if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
@@ -132,10 +133,14 @@ ${JSON.stringify(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-goog-api-key": apiKey, // use header (matches your curl)
+          "X-goog-api-key": apiKey,
         },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
+          contents: [
+            {
+              parts: [{ text: prompt }],
+            },
+          ],
         }),
       }
     );
@@ -153,12 +158,10 @@ ${JSON.stringify(
       const aiContent =
         aiResult.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
       const jsonMatch = aiContent.match(/\{[\s\S]*\}/);
-      generatedContent = jsonMatch
-        ? JSON.parse(jsonMatch[0])
-        : responseStructure;
+      generatedContent = jsonMatch ? JSON.parse(jsonMatch[0]) : responseStructure;
     } catch (err) {
       console.error("JSON parse error:", err);
-      generatedContent = responseStructure; // fallback
+      generatedContent = responseStructure; // fallback default
     }
 
     return {
