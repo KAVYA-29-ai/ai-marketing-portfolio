@@ -1,843 +1,733 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Marketing Portfolio - Professional</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Animated background particles */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            animation: float 6s infinite linear;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Header with glassmorphism */
-        header {
-            text-align: center;
-            margin-bottom: 60px;
-            padding: 80px 0;
-        }
-
-        .logo {
-            font-size: 4rem;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradientShift 3s ease-in-out infinite;
-            font-weight: 900;
-            margin-bottom: 20px;
-            text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
-        }
-
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .subtitle {
-            font-size: 1.4rem;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 300;
-            margin-bottom: 30px;
-        }
-
-        .header-stats {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin-top: 40px;
-        }
-
-        .stat {
-            text-align: center;
-            color: white;
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            display: block;
-            color: #4ecdc4;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Main content with advanced grid */
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 50px;
-            margin-bottom: 60px;
-        }
-
-        /* Advanced glassmorphism cards */
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.5s;
-        }
-
-        .card:hover::before {
-            left: 100%;
-        }
-
-        .card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .card-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 20px;
-            font-size: 24px;
-            color: white;
-            box-shadow: 0 8px 24px rgba(255, 107, 107, 0.3);
-        }
-
-        .card h2 {
-            color: white;
-            font-size: 1.8rem;
-            font-weight: 600;
-        }
-
-        /* Advanced form styling */
-        .form-group {
-            margin-bottom: 25px;
-            position: relative;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.95rem;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 16px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            font-size: 16px;
-            color: white;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        input::placeholder, textarea::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: #4ecdc4;
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
-            transform: translateY(-2px);
-        }
-
-        /* Epic button design */
-        .btn {
-            background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 50%, #45b7d1 100%);
-            background-size: 200% 200%;
-            color: white;
-            border: none;
-            padding: 18px 40px;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            width: 100%;
-            position: relative;
-            overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .btn:hover {
-            animation: gradientShift 1s ease infinite;
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4);
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Advanced loading animation */
-        .loading {
-            display: none;
-            text-align: center;
-            margin: 30px 0;
-        }
-
-        .loading-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #4ecdc4;
-            animation: spin 1s ease-in-out infinite;
-            margin-bottom: 20px;
-        }
-
-        .loading-text {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-
-        .loading-dots::after {
-            content: '';
-            animation: dots 1.5s steps(5, end) infinite;
-        }
-
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60% { content: '...'; }
-            90%, 100% { content: ''; }
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Premium result cards */
-        .result {
-            margin-top: 40px;
-            padding: 0;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            display: none;
-            overflow: hidden;
-        }
-
-        .result-header {
-            padding: 25px 30px;
-            background: linear-gradient(135deg, #4ecdc4, #45b7d1);
-            color: white;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .result-header h3 {
-            font-size: 1.4rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-        }
-
-        .result-header i {
-            margin-right: 12px;
-            font-size: 1.2rem;
-        }
-
-        .result-content {
-            padding: 30px;
-        }
-
-        .result-section {
-            margin-bottom: 25px;
-            padding: 25px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            border-left: 4px solid #4ecdc4;
-            transition: transform 0.3s ease;
-        }
-
-        .result-section:hover {
-            transform: translateX(5px);
-        }
-
-        .result-section h4 {
-            color: #4ecdc4;
-            margin-bottom: 12px;
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-
-        .result-section p {
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.7;
-            font-size: 1rem;
-        }
-
-        .error {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-        }
-
-        .error .result-header {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-        }
-
-        /* Footer */
-        .footer {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.8);
-            margin-top: 80px;
-            padding: 40px 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 20px;
-        }
-
-        .social-links a {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .social-links a:hover {
-            color: #4ecdc4;
-            transform: translateY(-3px);
-        }
-
-        /* Responsive design */
-        @media (max-width: 1200px) {
-            .container { max-width: 100%; }
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-
-            .logo {
-                font-size: 2.5rem;
-            }
-
-            .header-stats {
-                flex-direction: column;
-                gap: 20px;
-            }
-
-            .card {
-                padding: 30px 25px;
-            }
-
-            .footer-content {
-                flex-direction: column;
-                gap: 20px;
-            }
-        }
-
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #4ecdc4, #45b7d1);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #45b7d1, #4ecdc4);
-        }
-    </style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Marketing Portfolio - Professional</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+
+  <style>
+    /* ==== RESET ==== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ==== GALAXY BACKGROUND (AESTHETIC) ==== */
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: radial-gradient(circle at 30% 120%, #0a0f1f 0%, #0a0f1f 20%, #120c27 55%, #000 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: #fff;
+    }
+
+    /* Aurora glow layer */
+    .aurora {
+      position: fixed;
+      width: 220%;
+      height: 220%;
+      top: -60%;
+      left: -60%;
+      background: conic-gradient(
+        from 0deg at 50% 50%,
+        rgba(0, 255, 200, 0.14),
+        rgba(255, 0, 200, 0.14),
+        rgba(0, 150, 255, 0.14),
+        rgba(0, 255, 200, 0.14)
+      );
+      filter: blur(180px);
+      animation: auroraSpin 38s linear infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+    @keyframes auroraSpin {
+      0%   { transform: rotate(0deg) scale(1); }
+      50%  { transform: rotate(180deg) scale(1.15); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    /* Stars */
+    .star {
+      position: fixed;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0.8;
+      animation: twinkle 3.2s infinite alternate ease-in-out;
+      z-index: 0;
+      pointer-events: none;
+    }
+    @keyframes twinkle {
+      from { opacity: 0.25; transform: scale(0.9); }
+      to   { opacity: 1;    transform: scale(1.15); }
+    }
+
+    /* Floating planets */
+    .planet {
+      position: fixed;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ff6b6b 0%, #b33939 60%, #5c1f1f 100%);
+      box-shadow: inset -8px -12px 24px rgba(0,0,0,0.35), 0 0 60px rgba(255,107,107,0.15);
+      animation: drift 62s linear infinite;
+      z-index: 0;
+      filter: saturate(1.1);
+      pointer-events: none;
+    }
+    .planet.blue {
+      background: radial-gradient(circle at 30% 30%, #45b7d1 0%, #1c5f75 60%, #0f2f3b 100%);
+      box-shadow: inset -8px -12px 24px rgba(0,0,0,0.35), 0 0 60px rgba(69,183,209,0.15);
+    }
+    @keyframes drift {
+      0%   { transform: translate(-10vw, 10vh) rotate(0deg); }
+      50%  { transform: translate(80vw, -40vh) rotate(180deg); }
+      100% { transform: translate(-10vw, 10vh) rotate(360deg); }
+    }
+
+    /* ==== LAYOUT ==== */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 2; /* above background layers */
+    }
+
+    /* ==== HEADER ==== */
+    header {
+      text-align: center;
+      margin-bottom: 60px;
+      padding: 80px 0 40px;
+    }
+
+    .logo {
+      font-size: 4rem;
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 3s ease-in-out infinite;
+      font-weight: 900;
+      margin-bottom: 20px;
+      text-shadow:
+        0 0 30px rgba(255, 255, 255, 0.35),
+        0 0 70px rgba(78, 205, 196, 0.25);
+    }
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50%      { background-position: 100% 50%; }
+    }
+
+    .subtitle {
+      font-size: 1.25rem;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 300;
+      margin-bottom: 20px;
+    }
+
+    .header-stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+    .stat { text-align: center; color: white; }
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      display: block;
+      color: #4ecdc4;
+      text-shadow: 0 0 20px rgba(78,205,196,0.35);
+    }
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.85;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ==== MAIN GRID ==== */
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+      margin-bottom: 60px;
+    }
+
+    /* ==== CARDS ==== */
+    .card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                  box-shadow 0.35s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 20% 20%, rgba(78,205,196,0.12), transparent 60%),
+                  radial-gradient(circle at 80% 80%, rgba(69,183,209,0.10), transparent 60%);
+      filter: blur(20px);
+      transition: transform 0.6s ease;
+    }
+    .card:hover::before { transform: scale(1.05); }
+    .card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    .card-header { display: flex; align-items: center; margin-bottom: 30px; }
+    .card-icon {
+      width: 60px; height: 60px;
+      background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      margin-right: 20px;
+      font-size: 24px;
+      color: white;
+      box-shadow: 0 8px 24px rgba(255, 107, 107, 0.3);
+    }
+    .card h2 { color: white; font-size: 1.8rem; font-weight: 700; letter-spacing: 0.4px; }
+
+    /* ==== FORM ==== */
+    .form-group { margin-bottom: 22px; }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 0.95rem;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 16px 18px;
+      background: rgba(255, 255, 255, 0.10);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 14px;
+      font-size: 16px;
+      color: white;
+      backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    input::placeholder, textarea::placeholder { color: rgba(255, 255, 255, 0.6); }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #4ecdc4;
+      background: rgba(255, 255, 255, 0.14);
+      box-shadow: 0 0 22px rgba(78, 205, 196, 0.35);
+      transform: translateY(-1px);
+    }
+
+    /* ==== BUTTON ==== */
+    .btn {
+      background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 50%, #45b7d1 100%);
+      background-size: 220% 220%;
+      color: white;
+      border: none;
+      padding: 16px 38px;
+      border-radius: 50px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.3s ease, background-position 0.7s ease;
+      width: 100%;
+      letter-spacing: 0.6px;
+      position: relative;
+      overflow: hidden;
+      text-transform: uppercase;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      background-position: 100% 0%;
+      box-shadow: 0 15px 35px rgba(255, 107, 107, 0.35);
+    }
+    .btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+    /* ==== LOADING ==== */
+    .loading { display: none; text-align: center; margin: 26px 0; }
+    .loading-container { display: flex; align-items: center; justify-content: center; flex-direction: column; }
+    .spinner {
+      width: 54px; height: 54px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #4ecdc4;
+      animation: spin 1s linear infinite;
+      margin-bottom: 16px;
+    }
+    .loading-text { color: rgba(255,255,255,0.95); font-size: 1.05rem; font-weight: 600; }
+    .loading-dots::after { content: ''; animation: dots 1.4s steps(5, end) infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes dots {
+      0%, 20% { content: '.'; }
+      40%     { content: '..'; }
+      60%     { content: '...'; }
+      90%,100%{ content: ''; }
+    }
+
+    /* ==== RESULTS ==== */
+    .result {
+      margin-top: 32px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(18px);
+      display: none;
+      overflow: hidden;
+    }
+    .result-header {
+      padding: 22px 26px;
+      background: linear-gradient(135deg, #4ecdc4, #45b7d1);
+      color: white;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    .result-header h3 {
+      font-size: 1.28rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      letter-spacing: 0.3px;
+    }
+    .result-header i { margin-right: 12px; font-size: 1.1rem; }
+
+    .result-content { padding: 26px; }
+    .result-section {
+      margin-bottom: 18px;
+      padding: 22px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 14px;
+      border-left: 4px solid #4ecdc4;
+      transition: transform 0.25s ease;
+    }
+    .result-section:hover { transform: translateX(5px); }
+    .result-section h4 {
+      color: #4ecdc4; margin-bottom: 10px; font-size: 1.08rem; font-weight: 700;
+    }
+    .result-section p {
+      color: rgba(255, 255, 255, 0.92);
+      line-height: 1.7;
+      font-size: 1rem;
+    }
+
+    .error .result-header { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+
+    /* ==== FOOTER ==== */
+    .footer {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.85);
+      margin-top: 70px;
+      padding: 34px 0 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      position: relative;
+      z-index: 2;
+    }
+    .footer-content { display: flex; justify-content: center; align-items: center; gap: 26px; flex-wrap: wrap; }
+    .social-links { display: flex; gap: 18px; }
+    .social-links a { color: rgba(255, 255, 255, 0.75); font-size: 1.4rem; transition: all 0.25s ease; }
+    .social-links a:hover { color: #4ecdc4; transform: translateY(-3px); }
+
+    .footer-line {
+      margin-top: 10px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      color: #fff;
+      text-shadow: 0 0 10px #4ecdc4, 0 0 20px #45b7d1, 0 0 30px #ff6b6b;
+    }
+
+    /* ==== RESPONSIVE ==== */
+    @media (max-width: 1200px) { .container { max-width: 100%; } }
+    @media (max-width: 900px)  { .main-content { grid-template-columns: 1fr; gap: 34px; } }
+    @media (max-width: 768px)  {
+      .logo { font-size: 2.6rem; }
+      .card { padding: 28px 22px; }
+      .header-stats { gap: 22px; }
+      .result-content { padding: 22px; }
+    }
+
+    /* ==== SCROLLBAR ==== */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.06); }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #4ecdc4, #45b7d1);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #45b7d1, #4ecdc4);
+    }
+  </style>
 </head>
+
 <body>
-    <!-- Animated particles background -->
-    <div class="particles" id="particles"></div>
+  <!-- AURORA + BACKGROUND OBJECTS -->
+  <div class="aurora" aria-hidden="true"></div>
 
-    <div class="container">
-        <header>
-            <div class="logo">AI Portfolio</div>
-            <p class="subtitle">Transform your marketing vision into compelling case studies and winning proposals</p>
-            
-            <div class="header-stats">
-                <div class="stat">
-                    <span class="stat-number" data-count="1000">0</span>
-                    <span class="stat-label">Case Studies Generated</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-number" data-count="500">0</span>
-                    <span class="stat-label">Proposals Created</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-number" data-count="95">0</span>
-                    <span class="stat-label">Success Rate %</span>
-                </div>
-            </div>
-        </header>
+  <div class="container">
+    <!-- HEADER -->
+    <header>
+      <div class="logo">AI Portfolio</div>
+      <p class="subtitle">Transform your marketing vision into compelling case studies and winning proposals</p>
 
-        <div class="main-content">
-            <!-- Case Study Generator -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h2>Case Study Generator</h2>
-                </div>
-                
-                <form id="caseStudyForm">
-                    <div class="form-group">
-                        <label for="projectTitle">
-                            <i class="fas fa-rocket"></i> Project Title
-                        </label>
-                        <input type="text" id="projectTitle" required placeholder="e.g., Revolutionary Social Media Campaign">
-                    </div>
+      <div class="header-stats">
+        <div class="stat">
+          <span class="stat-number" data-count="1000">0</span>
+          <span class="stat-label">Case Studies Generated</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number" data-count="500">0</span>
+          <span class="stat-label">Proposals Created</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number" data-count="95">0</span>
+          <span class="stat-label">Success Rate %</span>
+        </div>
+      </div>
+    </header>
 
-                    <div class="form-group">
-                        <label for="client">
-                            <i class="fas fa-building"></i> Client/Company
-                        </label>
-                        <input type="text" id="client" required placeholder="e.g., TechFlow Industries">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="industry">
-                            <i class="fas fa-industry"></i> Industry
-                        </label>
-                        <select id="industry" required>
-                            <option value="">Select Industry</option>
-                            <option value="Technology">🚀 Technology</option>
-                            <option value="Healthcare">🏥 Healthcare</option>
-                            <option value="Finance">💰 Finance</option>
-                            <option value="E-commerce">🛒 E-commerce</option>
-                            <option value="Education">📚 Education</option>
-                            <option value="Real Estate">🏠 Real Estate</option>
-                            <option value="Food & Beverage">🍽️ Food & Beverage</option>
-                            <option value="Other">✨ Other</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="objectives">
-                            <i class="fas fa-bullseye"></i> Project Objectives
-                        </label>
-                        <textarea id="objectives" required placeholder="Define your ambitious goals and vision..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="tactics">
-                            <i class="fas fa-chess"></i> Strategic Tactics
-                        </label>
-                        <textarea id="tactics" required placeholder="Describe your innovative approaches and methodologies..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="results">
-                            <i class="fas fa-trophy"></i> Results Achieved
-                        </label>
-                        <textarea id="results" required placeholder="Showcase your impressive outcomes and metrics..."></textarea>
-                    </div>
-
-                    <button type="submit" class="btn">
-                        <i class="fas fa-magic"></i> Generate Case Study
-                    </button>
-                </form>
-
-                <div class="loading" id="caseStudyLoading">
-                    <div class="loading-container">
-                        <div class="spinner"></div>
-                        <p class="loading-text loading-dots">Crafting your professional case study</p>
-                    </div>
-                </div>
-
-                <div class="result" id="caseStudyResult"></div>
-            </div>
-
-            <!-- Proposal Generator -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon">
-                        <i class="fas fa-handshake"></i>
-                    </div>
-                    <h2>Proposal Generator</h2>
-                </div>
-                
-                <form id="proposalForm">
-                    <div class="form-group">
-                        <label for="companyName">
-                            <i class="fas fa-building"></i> Company Name
-                        </label>
-                        <input type="text" id="companyName" required placeholder="e.g., Future Innovations Corp">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="businessType">
-                            <i class="fas fa-chart-pie"></i> Business Type
-                        </label>
-                        <select id="businessType" required>
-                            <option value="">Select Business Type</option>
-                            <option value="Startup">🚀 Startup</option>
-                            <option value="Small Business">🏪 Small Business</option>
-                            <option value="Medium Enterprise">🏢 Medium Enterprise</option>
-                            <option value="Large Corporation">🏛️ Large Corporation</option>
-                            <option value="Non-profit">❤️ Non-profit</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="marketingGoals">
-                            <i class="fas fa-target"></i> Marketing Goals
-                        </label>
-                        <textarea id="marketingGoals" required placeholder="Share your ambitious marketing objectives..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="currentChallenges">
-                            <i class="fas fa-mountain"></i> Current Challenges
-                        </label>
-                        <textarea id="currentChallenges" required placeholder="Describe the obstacles you're facing..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="budget">
-                            <i class="fas fa-dollar-sign"></i> Budget Range
-                        </label>
-                        <select id="budget" required>
-                            <option value="">Select Budget Range</option>
-                            <option value="Under $5,000">💡 Under $5,000</option>
-                            <option value="$5,000 - $15,000">💰 $5,000 - $15,000</option>
-                            <option value="$15,000 - $50,000">💎 $15,000 - $50,000</option>
-                            <option value="$50,000 - $100,000">🔥 $50,000 - $100,000</option>
-                            <option value="Over $100,000">👑 Over $100,000</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="timeline">
-                            <i class="fas fa-clock"></i> Timeline
-                        </label>
-                        <select id="timeline" required>
-                            <option value="">Select Timeline</option>
-                            <option value="1-3 months">⚡ 1-3 months</option>
-                            <option value="3-6 months">🎯 3-6 months</option>
-                            <option value="6-12 months">🚀 6-12 months</option>
-                            <option value="Ongoing">🔄 Ongoing Partnership</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn">
-                        <i class="fas fa-paper-plane"></i> Generate Proposal
-                    </button>
-                </form>
-
-                <div class="loading" id="proposalLoading">
-                    <div class="loading-container">
-                        <div class="spinner"></div>
-                        <p class="loading-text loading-dots">Creating your winning proposal</p>
-                    </div>
-                </div>
-
-                <div class="result" id="proposalResult"></div>
-            </div>
+    <!-- MAIN -->
+    <div class="main-content">
+      <!-- CASE STUDY CARD -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+          <h2>Case Study Generator</h2>
         </div>
 
-        <footer class="footer">
-            <div class="footer-content">
-                <p>Built with ❤️ using cutting-edge AI • Deployed on Netlify</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-linkedin"></i></a>
-                    <a href="#"><i class="fab fa-github"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                </div>
-            </div>
-        </footer>
+        <form id="caseStudyForm">
+          <div class="form-group">
+            <label for="projectTitle"><i class="fas fa-rocket"></i> Project Title</label>
+            <input type="text" id="projectTitle" required placeholder="e.g., Revolutionary Social Media Campaign"/>
+          </div>
+
+          <div class="form-group">
+            <label for="client"><i class="fas fa-building"></i> Client/Company</label>
+            <input type="text" id="client" required placeholder="e.g., TechFlow Industries"/>
+          </div>
+
+          <div class="form-group">
+            <label for="industry"><i class="fas fa-industry"></i> Industry</label>
+            <select id="industry" required>
+              <option value="">Select Industry</option>
+              <option value="Technology">🚀 Technology</option>
+              <option value="Healthcare">🏥 Healthcare</option>
+              <option value="Finance">💰 Finance</option>
+              <option value="E-commerce">🛒 E-commerce</option>
+              <option value="Education">📚 Education</option>
+              <option value="Real Estate">🏠 Real Estate</option>
+              <option value="Food & Beverage">🍽️ Food & Beverage</option>
+              <option value="Other">✨ Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="objectives"><i class="fas fa-bullseye"></i> Project Objectives</label>
+            <textarea id="objectives" required placeholder="Define your ambitious goals and vision..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="tactics"><i class="fas fa-chess"></i> Strategic Tactics</label>
+            <textarea id="tactics" required placeholder="Describe your innovative approaches and methodologies..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="results"><i class="fas fa-trophy"></i> Results Achieved</label>
+            <textarea id="results" required placeholder="Showcase your impressive outcomes and metrics..."></textarea>
+          </div>
+
+          <button type="submit" class="btn">
+            <i class="fas fa-magic"></i> Generate Case Study
+          </button>
+        </form>
+
+        <div class="loading" id="caseStudyLoading">
+          <div class="loading-container">
+            <div class="spinner"></div>
+            <p class="loading-text loading-dots">Crafting your professional case study</p>
+          </div>
+        </div>
+
+        <div class="result" id="caseStudyResult"></div>
+      </div>
+
+      <!-- PROPOSAL CARD -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon"><i class="fas fa-handshake"></i></div>
+          <h2>Proposal Generator</h2>
+        </div>
+
+        <form id="proposalForm">
+          <div class="form-group">
+            <label for="companyName"><i class="fas fa-building"></i> Company Name</label>
+            <input type="text" id="companyName" required placeholder="e.g., Future Innovations Corp"/>
+          </div>
+
+          <div class="form-group">
+            <label for="businessType"><i class="fas fa-chart-pie"></i> Business Type</label>
+            <select id="businessType" required>
+              <option value="">Select Business Type</option>
+              <option value="Startup">🚀 Startup</option>
+              <option value="Small Business">🏪 Small Business</option>
+              <option value="Medium Enterprise">🏢 Medium Enterprise</option>
+              <option value="Large Corporation">🏛️ Large Corporation</option>
+              <option value="Non-profit">❤️ Non-profit</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="marketingGoals"><i class="fas fa-target"></i> Marketing Goals</label>
+            <textarea id="marketingGoals" required placeholder="Share your ambitious marketing objectives..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="currentChallenges"><i class="fas fa-mountain"></i> Current Challenges</label>
+            <textarea id="currentChallenges" required placeholder="Describe the obstacles you're facing..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="budget"><i class="fas fa-dollar-sign"></i> Budget Range</label>
+            <select id="budget" required>
+              <option value="">Select Budget Range</option>
+              <option value="Under $5,000">💡 Under $5,000</option>
+              <option value="$5,000 - $15,000">💰 $5,000 - $15,000</option>
+              <option value="$15,000 - $50,000">💎 $15,000 - $50,000</option>
+              <option value="$50,000 - $100,000">🔥 $50,000 - $100,000</option>
+              <option value="Over $100,000">👑 Over $100,000</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="timeline"><i class="fas fa-clock"></i> Timeline</label>
+            <select id="timeline" required>
+              <option value="">Select Timeline</option>
+              <option value="1-3 months">⚡ 1-3 months</option>
+              <option value="3-6 months">🎯 3-6 months</option>
+              <option value="6-12 months">🚀 6-12 months</option>
+              <option value="Ongoing">🔄 Ongoing Partnership</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn">
+            <i class="fas fa-paper-plane"></i> Generate Proposal
+          </button>
+        </form>
+
+        <div class="loading" id="proposalLoading">
+          <div class="loading-container">
+            <div class="spinner"></div>
+            <p class="loading-text loading-dots">Creating your winning proposal</p>
+          </div>
+        </div>
+
+        <div class="result" id="proposalResult"></div>
+      </div>
     </div>
 
-    <script>
-        // Create animated particles
-        function createParticles() {
-            const particles = document.getElementById('particles');
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 6 + 's';
-                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
-                particles.appendChild(particle);
-            }
-        }
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="footer-content">
+        <p>Built with ❤️ using cutting-edge AI • Deployed on Netlify</p>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-linkedin"></i></a>
+          <a href="#"><i class="fab fa-github"></i></a>
+          <a href="#"><i class="fab fa-x-twitter"></i></a>
+        </div>
+      </div>
+      <div class="footer-line">✨ Made by Kavya ✨</div>
+    </footer>
+  </div>
 
-        // Animate counter numbers
-        function animateCounters() {
-            const counters = document.querySelectorAll('.stat-number');
-            counters.forEach(counter => {
-                const target = parseInt(counter.getAttribute('data-count'));
-                const increment = target / 100;
-                let current = 0;
-                
-                const timer = setInterval(() => {
-                    current += increment;
-                    if (current >= target) {
-                        counter.textContent = target;
-                        clearInterval(timer);
-                    } else {
-                        counter.textContent = Math.ceil(current);
-                    }
-                }, 20);
-            });
-        }
+  <script>
+    /* ===== BACKGROUND OBJECTS (STARS + PLANETS) ===== */
+    (function initBackground() {
+      // Stars
+      const starCount = 130;
+      for (let i = 0; i < starCount; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        const size = Math.random() * 2.4 + 0.8;
+        s.style.width = size + 'px';
+        s.style.height = size + 'px';
+        s.style.top = Math.random() * 100 + 'vh';
+        s.style.left = Math.random() * 100 + 'vw';
+        s.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        s.style.animationDelay = (Math.random() * 3) + 's';
+        document.body.appendChild(s);
+      }
+      // Planets
+      const planets = [
+        { size: 80 + Math.random() * 70, class: 'planet', top: '70vh', left: '-10vw', dur: 60 + Math.random() * 35 },
+        { size: 70 + Math.random() * 60, class: 'planet blue', top: '20vh', left: '-12vw', dur: 70 + Math.random() * 40 }
+      ];
+      planets.forEach(p => {
+        const el = document.createElement('div');
+        el.className = p.class;
+        el.style.width = p.size + 'px';
+        el.style.height = p.size + 'px';
+        el.style.top = p.top;
+        el.style.left = p.left;
+        el.style.animationDuration = p.dur + 's';
+        document.body.appendChild(el);
+      });
+    })();
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            createParticles();
-            setTimeout(animateCounters, 500);
+    /* ===== COUNTER ANIMATION ===== */
+    function animateCounters() {
+      const counters = document.querySelectorAll('.stat-number');
+      counters.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-count'), 10);
+        const increment = Math.max(1, Math.floor(target / 100));
+        let current = 0;
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= target) {
+            counter.textContent = target;
+            clearInterval(timer);
+          } else {
+            counter.textContent = Math.ceil(current);
+          }
+        }, 20);
+      });
+    }
+    document.addEventListener('DOMContentLoaded', () => setTimeout(animateCounters, 400));
+
+    /* ===== API HANDLERS ===== */
+    async function generateContent(type, data, loadingId, resultId, renderFunction) {
+      const loading = document.getElementById(loadingId);
+      const result = document.getElementById(resultId);
+      const submitBtn = document.querySelector(`#${type === 'case-study' ? 'caseStudyForm' : 'proposalForm'} button`);
+
+      loading.style.display = 'block';
+      result.style.display = 'none';
+      submitBtn.disabled = true;
+
+      try {
+        const response = await fetch('/.netlify/functions/generate-content', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type, data })
         });
 
-        // Form handlers (same functionality, enhanced UI)
-        document.getElementById('caseStudyForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = {
-                projectTitle: document.getElementById('projectTitle').value,
-                client: document.getElementById('client').value,
-                industry: document.getElementById('industry').value,
-                objectives: document.getElementById('objectives').value,
-                tactics: document.getElementById('tactics').value,
-                results: document.getElementById('results').value
-            };
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-            await generateContent('case-study', formData, 'caseStudyLoading', 'caseStudyResult', renderCaseStudy);
-        });
+        const responseData = await response.json();
+        renderFunction(responseData, result);
 
-        document.getElementById('proposalForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = {
-                companyName: document.getElementById('companyName').value,
-                businessType: document.getElementById('businessType').value,
-                marketingGoals: document.getElementById('marketingGoals').value,
-                currentChallenges: document.getElementById('currentChallenges').value,
-                budget: document.getElementById('budget').value,
-                timeline: document.getElementById('timeline').value
-            };
+      } catch (error) {
+        console.error('Error:', error);
+        result.innerHTML = `
+          <div class="result-header error">
+            <h3><i class="fas fa-exclamation-triangle"></i> Generation Failed</h3>
+          </div>
+          <div class="result-content">
+            <div class="result-section">
+              <p>Unable to generate content. Please check your API configuration and try again.</p>
+              <p><small>Error: ${error.message}</small></p>
+            </div>
+          </div>
+        `;
+      } finally {
+        loading.style.display = 'none';
+        result.style.display = 'block';
+        submitBtn.disabled = false;
+      }
+    }
 
-            await generateContent('proposal', formData, 'proposalLoading', 'proposalResult', renderProposal);
-        });
+    /* ===== FORM SUBMISSIONS ===== */
+    document.getElementById('caseStudyForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        projectTitle: document.getElementById('projectTitle').value,
+        client: document.getElementById('client').value,
+        industry: document.getElementById('industry').value,
+        objectives: document.getElementById('objectives').value,
+        tactics: document.getElementById('tactics').value,
+        results: document.getElementById('results').value
+      };
+      await generateContent('case-study', data, 'caseStudyLoading', 'caseStudyResult', renderCaseStudy);
+    });
 
-        async function generateContent(type, data, loadingId, resultId, renderFunction) {
-            const loading = document.getElementById(loadingId);
-            const result = document.getElementById(resultId);
-            const submitBtn = document.querySelector(`#${type === 'case-study' ? 'caseStudyForm' : 'proposalForm'} button`);
+    document.getElementById('proposalForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        companyName: document.getElementById('companyName').value,
+        businessType: document.getElementById('businessType').value,
+        marketingGoals: document.getElementById('marketingGoals').value,
+        currentChallenges: document.getElementById('currentChallenges').value,
+        budget: document.getElementById('budget').value,
+        timeline: document.getElementById('timeline').value
+      };
+      await generateContent('proposal', data, 'proposalLoading', 'proposalResult', renderProposal);
+    });
 
-            loading.style.display = 'block';
-            result.style.display = 'none';
-            submitBtn.disabled = true;
+    /* ===== RENDERERS ===== */
+    function renderCaseStudy(data, container) {
+      const cs = data.case_study || {};
+      container.innerHTML = `
+        <div class="result-header">
+          <h3><i class="fas fa-file-alt"></i> Professional Case Study Generated</h3>
+        </div>
+        <div class="result-content">
+          <div class="result-section">
+            <h4><i class="fas fa-info-circle"></i> Introduction</h4>
+            <p>${cs.introduction || ''}</p>
+          </div>
+          <div class="result-section">
+            <h4><i class="fas fa-exclamation-circle"></i> Challenge</h4>
+            <p>${cs.challenge || ''}</p>
+          </div>
+          <div class="result-section">
+            <h4><i class="fas fa-lightbulb"></i> Solution</h4>
+            <p>${cs.solution || ''}</p>
+          </div>
+          <div class="result-section">
+            <h4><i class="fas fa-trophy"></i> Results</h4>
+            <p>${cs.results || ''}</p>
+          </div>
+        </div>
+      `;
+    }
 
-            try {
-                const response = await fetch('/.netlify/functions/generate-content', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type, data })
-                });
-
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-                const responseData = await response.json();
-                renderFunction(responseData, result);
-
-            } catch (error) {
-                console.error('Error:', error);
-                result.innerHTML = `
-                    <div class="result-header error">
-                        <h3><i class="fas fa-exclamation-triangle"></i> Generation Failed</h3>
-                    </div>
-                    <div class="result-content">
-                        <div class="result-section">
-                            <p>Unable to generate content. Please check your API configuration and try again.</p>
-                            <p><small>Error: ${error.message}</small></p>
-                        </div>
-                    </div>
-                `;
-            } finally {
-                loading.style.display = 'none';
-                result.style.display = 'block';
-                submitBtn.disabled = false;
-            }
-        }
-
-        function renderCaseStudy(data, container) {
-            const caseStudy = data.case_study;
-            container.innerHTML = `
-                <div class="result-header">
-                    <h3><i class="fas fa-file-alt"></i> Professional Case Study Generated</h3>
-                </div>
-                <div class="result-content">
-                    <div class="result-section">
-                        <h4><i class="fas fa-info-circle"></i> Introduction</h4>
-                        <p>${caseStudy.introduction}</p>
-                    </div>
-                    <div class="result-section">
-                        <h4><i class="fas fa-exclamation-circle"></i> Challenge</h4>
-                        <p>${caseStudy.challenge}</p>
-                    </div>
-                    <div class="result-section">
-                        <h4><i class="fas fa-lightbulb"></i> Solution</h4>
-                        <p>${caseStudy.solution}</p>
-                    </div>
-                    <div class="result-section">
-                        <h4><i class="fas fa-trophy"></i> Results</h4>
-                        <p>${caseStudy.results}</p>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderProposal(data, container) {
-            const proposal = data.proposal_outline;
-            container.innerHTML = `
-                <div class="result-header">
-                    <h3><i class="fas fa-handshake"></i> Strategic Proposal Generated</h3>
-                </div>
-                <div class="result-content">
-                    <div class="result-section">
-                        <h4><i class="fas fa-executive-summary"></i> Executive Summary</h4>
-                        <p>${proposal.executive_summary}</p>
-                    </div>
-                    <div class="result-section">
-                        <h4><i class="fas fa-chess-knight"></i> Recommended Strategy</h4>
-                        <p>${proposal.strategy}</p>
-                    </div>
-                    <div class="result-section">
-                        <h4><i class="fas fa-tasks"></i> Key Deliverables</h4>
-                        <p>${proposal.deliverables}</p>
-                    </div>
-                    <div class="result-section">
-                        <h4><i class="fas fa-calendar-alt"></i> Timeline & Investment</h4>
-                        <p>${proposal.timeline_investment}</p>
-                    </div>
-                    <div class="result-section">
-                        <h4><i class="fas fa-arrow-right"></i> Next Steps</h4>
-                        <p>${proposal.next_steps}</p>
-                    </div>
-                </div>
-            `;
-        }
-    </script>
+    function renderProposal(data, container) {
+      const p = data.proposal_outline || {};
+      container.innerHTML = `
+        <div class="result-header">
+          <h3><i class="fas fa-handshake"></i> Strategic Proposal Generated</h3>
+        </div>
+        <div class="result-content">
+          <div class="result-section">
+            <h4><i class="fas fa-file-alt"></i> Executive Summary</h4>
+            <p>${p.executive_summary || ''}</p>
+          </div>
+          <div class="result-section">
+            <h4><i class="fas fa-chess-knight"></i> Recommended Strategy</h4>
+            <p>${p.strategy || ''}</p>
+          </div>
+          <div class="result-section">
+            <h4><i class="fas fa-tasks"></i> Key Deliverables</h4>
+            <p>${p.deliverables || ''}</p>
+          </div>
+          <div class="result-section">
+            <h4><i class="fas fa-calendar-alt"></i> Timeline & Investment</h4>
+            <p>${p.timeline_investment || ''}</p>
+          </div>
+          <div class="result-section">
+            <h4><i class="fas fa-arrow-right"></i> Next Steps</h4>
+            <p>${p.next_steps || ''}</p>
+          </div>
+        </div>
+      `;
+    }
+  </script>
 </body>
 </html>
