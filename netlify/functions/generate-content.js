@@ -1,6 +1,7 @@
+// netlify/functions/generate-content.js
 const fetch = require("node-fetch");
 
-exports.handler = async (event) => {
+exports.handler = async (event, context) => {
   // Handle CORS preflight
   if (event.httpMethod === "OPTIONS") {
     return {
@@ -14,6 +15,7 @@ exports.handler = async (event) => {
     };
   }
 
+  // Only POST allowed
   if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
@@ -26,9 +28,9 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { type, data } = JSON.parse(event.body);
+    const { type, data } = JSON.parse(event.body || "{}");
 
-    const apiKey = process.env.GEMINI_API_KEY; // ✅ keep consistent
+    const apiKey = process.env.GOOGLE_API_KEY;
     if (!apiKey) {
       return {
         statusCode: 500,
@@ -36,7 +38,7 @@ exports.handler = async (event) => {
           "Access-Control-Allow-Origin": "*",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ error: "Gemini API key not configured" }),
+        body: JSON.stringify({ error: "Google API key not configured" }),
       };
     }
 
@@ -67,7 +69,6 @@ Respond ONLY in JSON with this structure:
     "results": ""
   }
 }`;
-
       responseStructure = {
         case_study: {
           introduction: "",
@@ -103,7 +104,6 @@ Respond ONLY in JSON with this structure:
     "next_steps": ""
   }
 }`;
-
       responseStructure = {
         proposal_outline: {
           executive_summary: "",
@@ -117,7 +117,7 @@ Respond ONLY in JSON with this structure:
       throw new Error("Invalid content type");
     }
 
-    // ✅ Call Gemini 2.0 Flash API
+    // ✅ Call Gemini 2.0 Flash API (Google AI Studio key via X-goog-api-key)
     const geminiResp = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
       {
@@ -127,29 +127,58 @@ Respond ONLY in JSON with this structure:
           "X-goog-api-key": apiKey,
         },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
+          contents: [
+            {
+              parts: [{ text: prompt }],
+            },
+          ],
         }),
       }
     );
 
+    const rawText = await geminiResp.text();
+
     if (!geminiResp.ok) {
-      const errorData = await geminiResp.text();
-      console.error("Gemini API error:", errorData);
-      throw new Error(`Gemini API error: ${geminiResp.status}`);
+      console.error("Gemini API error:", rawText);
+      return {
+        statusCode: 500,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          error: "Gemini API error",
+          details: rawText,
+        }),
+      };
     }
 
-    const aiResult = await geminiResp.json();
+    // Parse Gemini response safely
+    let aiResult;
+    try {
+      aiResult = JSON.parse(rawText);
+    } catch {
+      return {
+        statusCode: 500,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          error: "Invalid JSON from Gemini",
+          details: rawText,
+        }),
+      };
+    }
 
     let generatedContent;
     try {
       const aiContent =
         aiResult.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
       const jsonMatch = aiContent.match(/\{[\s\S]*\}/);
-      generatedContent = jsonMatch
-        ? JSON.parse(jsonMatch[0])
-        : responseStructure;
+      generatedContent = jsonMatch ? JSON.parse(jsonMatch[0]) : responseStructure;
     } catch (err) {
-      console.error("JSON parse error:", err);
+      console.error("JSON parse fallback:", err);
       generatedContent = responseStructure;
     }
 

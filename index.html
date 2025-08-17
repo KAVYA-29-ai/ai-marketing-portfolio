@@ -612,7 +612,8 @@
       submitBtn.disabled = true;
 
       try {
-        const response = await fetch('/.netlify/functions/generate-content', {
+        // ✅ FIXED: use /generate which is redirected to the function by netlify.toml
+        const response = await fetch('/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type, data })
