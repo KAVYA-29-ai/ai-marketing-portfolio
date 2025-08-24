@@ -30,7 +30,7 @@ Simple, user-friendly forms.
 
 Instant AI-generated outputs displayed dynamically.
 
-⚡ Challenges / Kamiyan
+⚡ Challenges 
 
 Form Submission Storage
 
