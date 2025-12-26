@@ -1,7 +1,7 @@
 const fetch = require("node-fetch");
 
-exports.handler = async (event, context) => {
-  // Handle CORS preflight
+exports.handler = async (event) => {
+  // CORS
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
@@ -14,13 +14,11 @@ exports.handler = async (event, context) => {
     };
   }
 
-  // Only POST allowed
   if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
       headers: {
         "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
       },
       body: JSON.stringify({ error: "Method not allowed" }),
     };
@@ -29,22 +27,20 @@ exports.handler = async (event, context) => {
   try {
     const { type, data } = JSON.parse(event.body);
 
-    const apiKey = process.env.GOOGLE_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return {
-        statusCode: 500,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ error: "Google API key not configured" }),
-      };
+      throw new Error("GEMINI_API_KEY missing");
     }
 
-    let prompt, responseStructure;
+    let prompt;
+    let fallbackResponse;
 
+    // =============================
+    // PROMPT BUILDING
+    // =============================
     if (type === "case-study") {
-      prompt = `Create a professional marketing case study based on this info:
+      prompt = `
+Create a professional marketing case study.
 
 Project Title: ${data.projectTitle}
 Client: ${data.client}
@@ -53,27 +49,18 @@ Objectives: ${data.objectives}
 Tactics Used: ${data.tactics}
 Results Achieved: ${data.results}
 
-Sections needed:
-1. Introduction (2–3 sentences)
-2. Challenge (2–3 sentences)
-3. Solution (2–3 sentences)
-4. Results (2–3 sentences)
+Return JSON only in this format:
+{
+  "case_study": {
+    "introduction": "",
+    "challenge": "",
+    "solution": "",
+    "results": ""
+  }
+}
+`;
 
-Respond ONLY in JSON with this structure:
-${JSON.stringify(
-  {
-    case_study: {
-      introduction: "",
-      challenge: "",
-      solution: "",
-      results: "",
-    },
-  },
-  null,
-  2
-)}`;
-
-      responseStructure = {
+      fallbackResponse = {
         case_study: {
           introduction: "",
           challenge: "",
@@ -82,38 +69,29 @@ ${JSON.stringify(
         },
       };
     } else if (type === "proposal") {
-      prompt = `Create a marketing proposal outline based on this info:
+      prompt = `
+Create a marketing proposal.
 
 Company Name: ${data.companyName}
 Business Type: ${data.businessType}
-Marketing Goals: ${data.marketingGoals}
-Current Challenges: ${data.currentChallenges}
-Budget Range: ${data.budget}
+Goals: ${data.marketingGoals}
+Challenges: ${data.currentChallenges}
+Budget: ${data.budget}
 Timeline: ${data.timeline}
 
-Sections needed:
-1. Executive Summary
-2. Recommended Strategy
-3. Key Deliverables
-4. Timeline & Investment
-5. Next Steps
+Return JSON only:
+{
+  "proposal_outline": {
+    "executive_summary": "",
+    "strategy": "",
+    "deliverables": "",
+    "timeline_investment": "",
+    "next_steps": ""
+  }
+}
+`;
 
-Respond ONLY in JSON with this structure:
-${JSON.stringify(
-  {
-    proposal_outline: {
-      executive_summary: "",
-      strategy: "",
-      deliverables: "",
-      timeline_investment: "",
-      next_steps: "",
-    },
-  },
-  null,
-  2
-)}`;
-
-      responseStructure = {
+      fallbackResponse = {
         proposal_outline: {
           executive_summary: "",
           strategy: "",
@@ -123,12 +101,14 @@ ${JSON.stringify(
         },
       };
     } else {
-      throw new Error("Invalid content type");
+      throw new Error("Invalid type");
     }
 
-    // ✅ Call Gemini 2.0 Flash API
-    const geminiResp = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+    // =============================
+    // GEMINI 2.5 FLASH CALL
+    // =============================
+    const response = await fetch(
+      "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent",
       {
         method: "POST",
         headers: {
@@ -145,23 +125,24 @@ ${JSON.stringify(
       }
     );
 
-    if (!geminiResp.ok) {
-      const errorData = await geminiResp.text();
-      console.error("Gemini API error:", errorData);
-      throw new Error(`Gemini API error: ${geminiResp.status}`);
+    if (!response.ok) {
+      const err = await response.text();
+      console.error("Gemini error:", err);
+      throw new Error("Gemini API failed");
     }
 
-    const aiResult = await geminiResp.json();
+    const result = await response.json();
 
-    let generatedContent;
+    const rawText =
+      result?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+    // Extract JSON safely
+    let finalData;
     try {
-      const aiContent =
-        aiResult.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
-      const jsonMatch = aiContent.match(/\{[\s\S]*\}/);
-      generatedContent = jsonMatch ? JSON.parse(jsonMatch[0]) : responseStructure;
-    } catch (err) {
-      console.error("JSON parse error:", err);
-      generatedContent = responseStructure; // fallback default
+      const match = rawText.match(/\{[\s\S]*\}/);
+      finalData = match ? JSON.parse(match[0]) : fallbackResponse;
+    } catch {
+      finalData = fallbackResponse;
     }
 
     return {
@@ -170,19 +151,19 @@ ${JSON.stringify(
         "Access-Control-Allow-Origin": "*",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(generatedContent),
+      body: JSON.stringify(finalData),
     };
   } catch (error) {
-    console.error("Function error:", error);
+    console.error("ERROR:", error);
+
     return {
       statusCode: 500,
       headers: {
         "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        error: "Failed to generate content",
-        details: error.message,
+        error: "Generation failed",
+        message: error.message,
       }),
     };
   }
